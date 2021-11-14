@@ -34,6 +34,8 @@ static auto Dot(const sf::Vector2f& lhs, const sf::Vector2f& rhs) { return lhs.x
 
 static auto Length(const sf::Vector2f& vector) noexcept { return std::sqrt(vector.x * vector.x + vector.y * vector.y); }
 
+static auto Length2(const sf::Vector2f& vector) noexcept { return vector.x * vector.x + vector.y * vector.y; }
+
 static auto Clamp(const sf::Vector2f& vector, const float min, const float max)
 {
     const auto length = Length(vector);
@@ -282,7 +284,7 @@ int main()
                     auto* closest_boid = &boids.front();
                     for (auto& boid : boids) {
                         boid.Deselect();
-                        const auto distance = Length(boid.getPosition() - mouse);
+                        const auto distance = Length2(boid.getPosition() - mouse);
                         if (distance < min_distance) {
                             min_distance = distance;
                             closest_boid = &boid;
