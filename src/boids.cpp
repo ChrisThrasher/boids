@@ -57,12 +57,12 @@ class Boid : public sf::ConvexShape {
 
 public:
     Boid();
-    auto GetVelocity() const { return m_velocity; }
-    auto IsSelected() const { return m_is_selected; }
+    const auto& GetVelocity() const { return m_velocity; }
+    const auto& GetNeighbors() const { return m_neighbors; };
 
     void SetNeighbors(const std::vector<Boid*>& neighbors);
     void Update(const float dt);
-    void Select();
+    auto Select() -> Boid*;
     void Deselect();
     void Highlight();
     void Dehighlight();
@@ -141,13 +141,12 @@ void Boid::Update(const float dt)
         setPosition(getPosition().x, height);
 }
 
-void Boid::Select()
+auto Boid::Select() -> Boid*
 {
     Dehighlight();
     m_is_selected = true;
     setFillColor(sf::Color::Red);
-    for (auto* neighbor : m_neighbors)
-        neighbor->Highlight();
+    return this;
 }
 
 void Boid::Deselect()
@@ -157,13 +156,10 @@ void Boid::Deselect()
     m_is_selected = false;
     const auto brightness = brightness_dist(rng);
     setFillColor({ brightness, brightness, brightness });
-    for (auto* neighbor : m_neighbors)
-        neighbor->Dehighlight();
 }
 
 void Boid::Highlight()
 {
-    Deselect();
     m_is_highlighted = true;
     setFillColor(sf::Color::Yellow);
 }
@@ -190,7 +186,7 @@ void Boid::SetNeighbors(const std::vector<Boid*>& neighbors)
 int main()
 {
     auto boids = std::array<Boid, 250>();
-    boids.front().Select();
+    auto* selected_boid = boids.front().Select();
 
     auto clock = sf::Clock();
     auto font = sf::Font();
@@ -218,7 +214,7 @@ int main()
                 switch (event.key.code) {
                 case sf::Keyboard::Space:
                     boids = {};
-                    boids.front().Select();
+                    selected_boid = boids.front().Select();
                     break;
                 case sf::Keyboard::A:
                     active_control = Control::ALIGNMENT;
@@ -279,18 +275,18 @@ int main()
                 break;
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
+                    selected_boid->Deselect();
                     const auto mouse = sf::Vector2f { (float)event.mouseButton.x, (float)event.mouseButton.y };
                     auto min_distance = std::numeric_limits<float>::max();
-                    auto* closest_boid = &boids.front();
                     for (auto& boid : boids) {
                         boid.Deselect();
                         const auto distance = Length2(boid.getPosition() - mouse);
                         if (distance < min_distance) {
                             min_distance = distance;
-                            closest_boid = &boid;
+                            selected_boid = &boid;
                         }
                     }
-                    closest_boid->Select();
+                    selected_boid->Select();
                 }
                 break;
             default:
@@ -301,6 +297,7 @@ int main()
         window.clear();
 
         for (auto& boid : boids) {
+            boid.Dehighlight();
             auto neighbors = std::vector<Boid*>();
             for (auto& neighbor : boids) {
                 if (&boid == &neighbor)
@@ -313,37 +310,34 @@ int main()
                                  / (Length(to_neighbor) * Length(boid.GetVelocity())))
                         < perception_angle) {
                     neighbors.push_back(&neighbor);
-                    if (boid.IsSelected())
-                        neighbor.Highlight();
-                } else {
-                    if (boid.IsSelected())
-                        neighbor.Dehighlight();
                 }
             }
             boid.SetNeighbors(neighbors);
         }
+
+        for (auto& neighbor : selected_boid->GetNeighbors())
+            neighbor->Highlight();
 
         const auto elapsed = clock.getElapsedTime();
         clock.restart();
         for (auto& boid : boids) {
             boid.Update(elapsed.asSeconds());
             window.draw(boid);
-            if (boid.IsSelected()) {
-                auto view_region = sf::ConvexShape();
-                view_region.setPointCount(30);
-                view_region.setFillColor({ 255, 255, 255, 64 });
-                const auto initial_angle = std::numbers::pi_v<float> / 2.0f - perception_angle;
-                const auto delta_theta = 2 * perception_angle / (float)view_region.getPointCount();
-                for (size_t i = 1; i < view_region.getPointCount(); ++i) {
-                    const auto theta = initial_angle + (float)i * delta_theta;
-                    const auto point = perception_radius * sf::Vector2f(std::sin(theta), std::cos(theta));
-                    view_region.setPoint(i, point);
-                }
-                view_region.setPosition(boid.getPosition());
-                view_region.setRotation(boid.getRotation());
-                window.draw(view_region);
-            }
         }
+
+        auto view_region = sf::ConvexShape();
+        view_region.setPointCount(30);
+        view_region.setFillColor({ 255, 255, 255, 64 });
+        const auto initial_angle = std::numbers::pi_v<float> / 2.0f - perception_angle;
+        const auto delta_theta = 2 * perception_angle / (float)view_region.getPointCount();
+        for (size_t i = 1; i < view_region.getPointCount(); ++i) {
+            const auto theta = initial_angle + (float)i * delta_theta;
+            const auto point = perception_radius * sf::Vector2f(std::sin(theta), std::cos(theta));
+            view_region.setPoint(i, point);
+        }
+        view_region.setPosition(selected_boid->getPosition());
+        view_region.setRotation(selected_boid->getRotation());
+        window.draw(view_region);
 
         auto text_builder = std::ostringstream();
         text_builder << std::setprecision(1) << std::scientific;
