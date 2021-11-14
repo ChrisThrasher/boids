@@ -304,12 +304,13 @@ int main()
                     continue;
                 const auto is_within_radius
                     = Length2(neighbor.getPosition() - boid.getPosition()) < perception_radius * perception_radius;
-                const auto to_neighbor = neighbor.getPosition() - boid.getPosition();
-                if (is_within_radius
-                    && std::acos(Dot(to_neighbor, boid.GetVelocity())
-                                 / (Length(to_neighbor) * Length(boid.GetVelocity())))
-                        < perception_angle) {
-                    neighbors.push_back(&neighbor);
+                if (is_within_radius) {
+                    const auto to_neighbor = neighbor.getPosition() - boid.getPosition();
+                    const auto is_within_view = std::acos(Dot(to_neighbor, boid.GetVelocity())
+                                                          / (Length(to_neighbor) * Length(boid.GetVelocity())))
+                        < perception_angle;
+                    if (is_within_view)
+                        neighbors.push_back(&neighbor);
                 }
             }
             boid.SetNeighbors(neighbors);
