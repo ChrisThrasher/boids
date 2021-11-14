@@ -305,7 +305,8 @@ int main()
             for (auto& neighbor : boids) {
                 if (&boid == &neighbor)
                     continue;
-                const auto is_within_radius = Length(neighbor.getPosition() - boid.getPosition()) < perception_radius;
+                const auto is_within_radius
+                    = Length2(neighbor.getPosition() - boid.getPosition()) < perception_radius * perception_radius;
                 const auto to_neighbor = neighbor.getPosition() - boid.getPosition();
                 if (is_within_radius
                     && std::acos(Dot(to_neighbor, boid.GetVelocity())
