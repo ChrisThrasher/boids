@@ -305,10 +305,10 @@ int main()
                     continue;
                 const auto is_within_radius = Length(neighbor.getPosition() - boid.getPosition()) < perception_radius;
                 const auto to_neighbor = neighbor.getPosition() - boid.getPosition();
-                const auto is_within_view = std::acos(Dot(to_neighbor, boid.GetVelocity())
-                                                      / (Length(to_neighbor) * Length(boid.GetVelocity())))
-                    < perception_angle;
-                if (is_within_radius && is_within_view) {
+                if (is_within_radius
+                    && std::acos(Dot(to_neighbor, boid.GetVelocity())
+                                 / (Length(to_neighbor) * Length(boid.GetVelocity())))
+                        < perception_angle) {
                     neighbors.push_back(&neighbor);
                     if (boid.IsSelected())
                         neighbor.Highlight();
