@@ -306,9 +306,9 @@ int main()
                     = Length2(neighbor.getPosition() - boid.getPosition()) < perception_radius * perception_radius;
                 if (is_within_radius) {
                     const auto to_neighbor = neighbor.getPosition() - boid.getPosition();
-                    const auto is_within_view = std::acos(Dot(to_neighbor, boid.GetVelocity())
-                                                          / (Length(to_neighbor) * Length(boid.GetVelocity())))
-                        < perception_angle;
+                    const auto is_within_view
+                        = Dot(to_neighbor, boid.GetVelocity()) / (Length(to_neighbor) * Length(boid.GetVelocity()))
+                        > std::cos(perception_angle);
                     if (is_within_view)
                         neighbors.push_back(&neighbor);
                 }
@@ -326,8 +326,7 @@ int main()
             window.draw(boid);
         }
 
-        auto view_region = sf::ConvexShape();
-        view_region.setPointCount(30);
+        auto view_region = sf::ConvexShape(30);
         view_region.setFillColor({ 255, 255, 255, 64 });
         const auto initial_angle = std::numbers::pi_v<float> / 2.0f - perception_angle;
         const auto delta_theta = 2 * perception_angle / (float)view_region.getPointCount();
