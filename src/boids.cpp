@@ -341,7 +341,7 @@ int main()
         text_builder << perception_radius << " (R) radius" << (control == Control::RADIUS ? " <" : "") << '\n';
         text_builder << 2 * perception_angle * to_degrees << " (G) angle" << (control == Control::ANGLE ? " <" : "")
                      << '\n';
-        text_builder << std::setw(3) << 1.0 / elapsed << " fps\n";
+        text_builder << std::setw(3) << 1.0f / elapsed << " fps\n";
         text.setString(text_builder.str());
         window.draw(text);
 
