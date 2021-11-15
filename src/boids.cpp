@@ -32,9 +32,9 @@ static auto perception_angle = 135.0f * to_radians;
 
 static auto Dot(const sf::Vector2f& lhs, const sf::Vector2f& rhs) { return lhs.x * rhs.x + lhs.y * rhs.y; }
 
-static auto Length(const sf::Vector2f& vector) noexcept { return std::sqrt(vector.x * vector.x + vector.y * vector.y); }
+static auto Length2(const sf::Vector2f& vector) noexcept { return Dot(vector, vector); }
 
-static auto Length2(const sf::Vector2f& vector) noexcept { return vector.x * vector.x + vector.y * vector.y; }
+static auto Length(const sf::Vector2f& vector) noexcept { return std::sqrt(Length2(vector)); }
 
 static auto Clamp(const sf::Vector2f& vector, const float min, const float max)
 {
