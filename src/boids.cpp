@@ -48,8 +48,6 @@ class Boid : public sf::ConvexShape {
     sf::Vector2f m_velocity {};
     sf::Vector2f m_acceleration {};
     sf::Color m_color {};
-    bool m_is_selected { false };
-    bool m_is_highlighted { false };
 
 public:
     Boid();
@@ -125,30 +123,15 @@ void Boid::Update(const float dt)
 
 auto Boid::Select() -> Boid*
 {
-    m_is_selected = true;
     setFillColor(sf::Color::Red);
     return this;
 }
 
-void Boid::Deselect()
-{
-    if (m_is_selected)
-        setFillColor(m_color);
-    m_is_selected = false;
-}
+void Boid::Deselect() { setFillColor(m_color); }
 
-void Boid::Highlight()
-{
-    m_is_highlighted = true;
-    setFillColor(sf::Color::Yellow);
-}
+void Boid::Highlight() { setFillColor(sf::Color::Yellow); }
 
-void Boid::Dehighlight()
-{
-    if (m_is_highlighted)
-        setFillColor(m_color);
-    m_is_highlighted = false;
-}
+void Boid::Dehighlight() { setFillColor(m_color); }
 
 int main(int argc, char* argv[])
 {
@@ -249,7 +232,6 @@ int main(int argc, char* argv[])
                     const auto mouse = sf::Vector2f { (float)event.mouseButton.x, (float)event.mouseButton.y };
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
-                        boid.Deselect();
                         const auto distance = Length2(boid.getPosition() - mouse);
                         if (distance < min_distance) {
                             min_distance = distance;
@@ -268,7 +250,6 @@ int main(int argc, char* argv[])
 
         auto highlighted_neighbors = std::vector<Boid*>();
         for (auto& boid : boids) {
-            boid.Dehighlight();
             auto neighbors = std::vector<Boid*>();
             for (auto& neighbor : boids) {
                 if (&boid == &neighbor)
@@ -283,9 +264,11 @@ int main(int argc, char* argv[])
                         neighbors.push_back(&neighbor);
                 }
             }
+            boid.Flock(neighbors);
             if (&boid == selected_boid)
                 highlighted_neighbors = neighbors;
-            boid.Flock(neighbors);
+            else
+                boid.Dehighlight();
         }
 
         for (auto& neighbor : highlighted_neighbors)
