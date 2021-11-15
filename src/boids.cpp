@@ -150,9 +150,12 @@ void Boid::Dehighlight()
     m_is_highlighted = false;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    auto boids = std::array<Boid, 250>();
+    size_t num_boids = 250;
+    if (argc > 1)
+        num_boids = std::stoull(argv[1]);
+    auto boids = std::vector<Boid>(num_boids);
     auto* selected_boid = boids.front().Select();
 
     auto clock = sf::Clock();
@@ -165,7 +168,7 @@ int main()
     text.setOutlineColor(sf::Color::Black);
     text.setPosition({ 10.0f, 5.0f });
 
-    auto window = sf::RenderWindow(sf::VideoMode(width, height), "Boids");
+    auto window = sf::RenderWindow(sf::VideoMode(width, height), std::to_string(num_boids) + " Boids");
     window.setFramerateLimit(framerate);
 
     enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
@@ -180,7 +183,7 @@ int main()
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
                 case sf::Keyboard::Space:
-                    boids = {};
+                    boids = std::vector<Boid>(num_boids);
                     selected_boid = boids.front().Select();
                     break;
                 case sf::Keyboard::A:
