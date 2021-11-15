@@ -281,8 +281,8 @@ int main(int argc, char* argv[])
 
         auto view_region = sf::ConvexShape(30);
         view_region.setFillColor({ 255, 255, 255, 64 });
-        const auto initial_angle = pi / 2.0f - perception_angle;
         const auto delta_theta = 2 * perception_angle / (float)(view_region.getPointCount() - 2);
+        const auto initial_angle = pi / 2.0f - perception_angle - delta_theta;
         for (size_t i = 1; i < view_region.getPointCount(); ++i) {
             const auto theta = initial_angle + (float)i * delta_theta;
             const auto point = perception_radius * sf::Vector2f(std::sin(theta), std::cos(theta));
