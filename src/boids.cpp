@@ -295,10 +295,9 @@ int main()
             for (auto& neighbor : boids) {
                 if (&boid == &neighbor)
                     continue;
-                const auto is_within_radius
-                    = Length2(neighbor.getPosition() - boid.getPosition()) < perception_radius * perception_radius;
+                const auto to_neighbor = neighbor.getPosition() - boid.getPosition();
+                const auto is_within_radius = Length2(to_neighbor) < perception_radius * perception_radius;
                 if (is_within_radius) {
-                    const auto to_neighbor = neighbor.getPosition() - boid.getPosition();
                     const auto is_within_view
                         = Dot(to_neighbor, boid.GetVelocity()) / (Length(to_neighbor) * Length(boid.GetVelocity()))
                         > std::cos(perception_angle);
