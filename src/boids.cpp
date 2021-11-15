@@ -68,11 +68,11 @@ public:
 };
 
 Boid::Boid()
+    : sf::ConvexShape(4)
 {
     setScale(10.0f, 10.0f);
     setPosition({ x_position_dist(rng), y_position_dist(rng) });
     setRotation(rotation_dist(rng));
-    setPointCount(4);
     setPoint(0, { 2, 0 });
     setPoint(1, { -2, -2 });
     setPoint(2, { -1, 0 });
