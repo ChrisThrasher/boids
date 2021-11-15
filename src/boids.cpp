@@ -118,7 +118,7 @@ void Boid::Update(const float dt)
     m_velocity = Clamp(m_velocity + dt * m_acceleration, min_speed, max_speed);
 
     setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
-    setPosition((int)(getPosition().x + width) % (int)width, (int)(getPosition().y + height) % (int)height);
+    setPosition(std::fmodf(getPosition().x + width, width), std::fmodf(getPosition().y + height, height));
 }
 
 void Boid::Select() { setFillColor(sf::Color::Red); }
