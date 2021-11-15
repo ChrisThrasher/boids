@@ -51,9 +51,6 @@ class Boid : public sf::ConvexShape {
     bool m_is_highlighted { false };
 
     void SetColor();
-    void Align(const std::vector<Boid*>& neighbors);
-    void Cohere(const std::vector<Boid*>& neighbors);
-    void Separate(const std::vector<Boid*>& neighbors);
 
 public:
     Boid();
@@ -83,51 +80,45 @@ Boid::Boid()
         * sf::Vector2f { std::cos(getRotation() * to_radians), std::sin(getRotation() * to_radians) };
 }
 
-void Boid::Align(const std::vector<Boid*>& neighbors)
+void Boid::Flock(const std::vector<Boid*>& neighbors)
 {
+    m_acceleration = {};
+    if (neighbors.empty())
+        return;
+
     const auto alignment = std::accumulate(neighbors.begin(),
                                            neighbors.end(),
-                                           sf::Vector2f(),
+                                           sf::Vector2f {},
                                            [this](const sf::Vector2f& sum, const Boid* boid) {
                                                return sum + boid->GetVelocity() - GetVelocity();
                                            })
-        / (float)neighbors.size();
-    m_acceleration += alignment_gain * alignment;
-}
-
-void Boid::Cohere(const std::vector<Boid*>& neighbors)
-{
+        * alignment_gain;
     const auto cohesion = std::accumulate(neighbors.begin(),
                                           neighbors.end(),
-                                          sf::Vector2f(),
+                                          sf::Vector2f {},
                                           [this](const sf::Vector2f& sum, const Boid* boid) {
                                               return sum + boid->getPosition() - getPosition();
                                           })
-        / (float)neighbors.size();
-    m_acceleration += cohesion_gain * cohesion;
-}
-
-void Boid::Separate(const std::vector<Boid*>& neighbors)
-{
+        * cohesion_gain;
     const auto separation = std::accumulate(neighbors.begin(),
                                             neighbors.end(),
-                                            sf::Vector2f(),
+                                            sf::Vector2f {},
                                             [this](const sf::Vector2f& sum, const Boid* boid) {
                                                 const auto diff = getPosition() - boid->getPosition();
                                                 return sum + diff / Length2(diff);
                                             })
-        / (float)neighbors.size();
-    m_acceleration += separation_gain * separation;
+        * separation_gain;
+
+    m_acceleration = (alignment + cohesion + separation) / (float)neighbors.size();
+    m_acceleration = Clamp(m_acceleration, 0.0f, 500.0f);
 }
 
 void Boid::Update(const float dt)
 {
     move(dt * m_velocity);
-    m_acceleration = Clamp(m_acceleration, 0.0f, 500.0f);
     m_velocity = Clamp(m_velocity + dt * m_acceleration, min_speed, max_speed);
-    setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
-    m_acceleration = {};
 
+    setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
     setPosition((int)(getPosition().x + width) % (int)width, (int)(getPosition().y + height) % (int)height);
 }
 
@@ -164,15 +155,6 @@ void Boid::Dehighlight()
         return;
     m_is_highlighted = false;
     SetColor();
-}
-
-void Boid::Flock(const std::vector<Boid*>& neighbors)
-{
-    if (neighbors.empty())
-        return;
-    Align(neighbors);
-    Cohere(neighbors);
-    Separate(neighbors);
 }
 
 int main()
