@@ -141,7 +141,6 @@ void Boid::Update(const float dt)
 
 auto Boid::Select() -> Boid*
 {
-    Dehighlight();
     m_is_selected = true;
     setFillColor(sf::Color::Red);
     return this;
