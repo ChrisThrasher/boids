@@ -319,8 +319,7 @@ int main()
         for (auto& neighbor : highlighted_neighbors)
             neighbor->Highlight();
 
-        const auto elapsed = clock.getElapsedTime().asSeconds();
-        clock.restart();
+        const auto elapsed = clock.restart().asSeconds();
         for (auto& boid : boids) {
             boid.Update(elapsed);
             window.draw(boid);
