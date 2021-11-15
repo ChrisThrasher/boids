@@ -201,7 +201,7 @@ int main()
     auto window = sf::RenderWindow(sf::VideoMode(width, height), "Boids");
     window.setFramerateLimit(framerate);
 
-    enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } active_control = Control::ALIGNMENT;
+    enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
 
     while (window.isOpen()) {
         auto event = sf::Event();
@@ -217,22 +217,22 @@ int main()
                     selected_boid = boids.front().Select();
                     break;
                 case sf::Keyboard::A:
-                    active_control = Control::ALIGNMENT;
+                    control = Control::ALIGNMENT;
                     break;
                 case sf::Keyboard::C:
-                    active_control = Control::COHESION;
+                    control = Control::COHESION;
                     break;
                 case sf::Keyboard::S:
-                    active_control = Control::SEPARATION;
+                    control = Control::SEPARATION;
                     break;
                 case sf::Keyboard::R:
-                    active_control = Control::RADIUS;
+                    control = Control::RADIUS;
                     break;
                 case sf::Keyboard::G:
-                    active_control = Control::ANGLE;
+                    control = Control::ANGLE;
                     break;
                 case sf::Keyboard::Up:
-                    switch (active_control) {
+                    switch (control) {
                     case Control::ALIGNMENT:
                         alignment_gain *= 2.0f;
                         break;
@@ -251,7 +251,7 @@ int main()
                     }
                     break;
                 case sf::Keyboard::Down:
-                    switch (active_control) {
+                    switch (control) {
                     case Control::ALIGNMENT:
                         alignment_gain /= 2.0f;
                         break;
@@ -319,10 +319,10 @@ int main()
         for (auto& neighbor : selected_boid->GetNeighbors())
             neighbor->Highlight();
 
-        const auto elapsed = clock.getElapsedTime();
+        const auto elapsed = clock.getElapsedTime().asSeconds();
         clock.restart();
         for (auto& boid : boids) {
-            boid.Update(elapsed.asSeconds());
+            boid.Update(elapsed);
             window.draw(boid);
         }
 
@@ -341,16 +341,14 @@ int main()
 
         auto text_builder = std::ostringstream();
         text_builder << std::setprecision(1) << std::scientific;
-        text_builder << alignment_gain << " (A) alignment" << (active_control == Control::ALIGNMENT ? " <" : "")
-                     << '\n';
-        text_builder << cohesion_gain << " (C) cohesion" << (active_control == Control::COHESION ? " <" : "") << '\n';
-        text_builder << separation_gain << " (S) separation" << (active_control == Control::SEPARATION ? " <" : "")
-                     << '\n';
+        text_builder << alignment_gain << " (A) alignment" << (control == Control::ALIGNMENT ? " <" : "") << '\n';
+        text_builder << cohesion_gain << " (C) cohesion" << (control == Control::COHESION ? " <" : "") << '\n';
+        text_builder << separation_gain << " (S) separation" << (control == Control::SEPARATION ? " <" : "") << '\n';
         text_builder << std::fixed;
-        text_builder << perception_radius << " (R) radius" << (active_control == Control::RADIUS ? " <" : "") << '\n';
-        text_builder << perception_angle * to_degrees << " (G) angle" << (active_control == Control::ANGLE ? " <" : "")
+        text_builder << perception_radius << " (R) radius" << (control == Control::RADIUS ? " <" : "") << '\n';
+        text_builder << perception_angle * to_degrees << " (G) angle" << (control == Control::ANGLE ? " <" : "")
                      << '\n';
-        text_builder << std::setw(3) << 1'000'000 / elapsed.asMicroseconds() << " fps\n";
+        text_builder << std::setw(3) << (int)std::ceil(1.0 / elapsed) << " fps\n";
         text.setString(text_builder.str());
 
         window.draw(text);
