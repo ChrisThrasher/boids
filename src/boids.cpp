@@ -279,6 +279,7 @@ int main(int argc, char* argv[])
             boid.Update(elapsed);
             window.draw(boid);
         }
+        window.draw(*selected_boid);
 
         auto view_region = sf::ConvexShape(30);
         view_region.setFillColor({ 255, 255, 255, 64 });
