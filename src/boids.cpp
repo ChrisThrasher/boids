@@ -129,14 +129,7 @@ void Boid::Update(const float dt)
     setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
     m_acceleration = {};
 
-    if (getPosition().x > width)
-        setPosition(0, getPosition().y);
-    if (getPosition().x < 0)
-        setPosition(width, getPosition().y);
-    if (getPosition().y > height)
-        setPosition(getPosition().x, 0);
-    if (getPosition().y < 0)
-        setPosition(getPosition().x, height);
+    setPosition((int)(getPosition().x + width) % (int)width, (int)(getPosition().y + height) % (int)height);
 }
 
 void Boid::SetColor()
