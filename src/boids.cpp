@@ -114,8 +114,7 @@ void Boid::Separate(const std::vector<Boid*>& neighbors)
                                             sf::Vector2f(),
                                             [this](const sf::Vector2f& sum, const Boid* boid) {
                                                 const auto diff = getPosition() - boid->getPosition();
-                                                const auto length2 = Length(diff) * Length(diff);
-                                                return sum + diff / length2;
+                                                return sum + diff / Length2(diff);
                                             })
         / (float)neighbors.size();
     m_acceleration += separation_gain * separation;
