@@ -49,18 +49,16 @@ class Boid : public sf::ConvexShape {
     sf::Vector2f m_acceleration {};
     bool m_is_selected { false };
     bool m_is_highlighted { false };
-    std::vector<Boid*> m_neighbors;
 
-    void Align();
-    void Cohere();
-    void Separate();
+    void Align(const std::vector<Boid*>& neighbors);
+    void Cohere(const std::vector<Boid*>& neighbors);
+    void Separate(const std::vector<Boid*>& neighbors);
 
 public:
     Boid();
     const auto& GetVelocity() const { return m_velocity; }
-    const auto& GetNeighbors() const { return m_neighbors; };
 
-    void SetNeighbors(const std::vector<Boid*>& neighbors);
+    void Flock(const std::vector<Boid*>& neighbors);
     void Update(const float dt);
     auto Select() -> Boid*;
     void Deselect();
@@ -85,41 +83,41 @@ Boid::Boid()
         * sf::Vector2f { std::cos(getRotation() * to_radians), std::sin(getRotation() * to_radians) };
 }
 
-void Boid::Align()
+void Boid::Align(const std::vector<Boid*>& neighbors)
 {
-    const auto alignment = std::accumulate(m_neighbors.begin(),
-                                           m_neighbors.end(),
+    const auto alignment = std::accumulate(neighbors.begin(),
+                                           neighbors.end(),
                                            sf::Vector2f(),
                                            [this](const sf::Vector2f& sum, const Boid* boid) {
                                                return sum + boid->GetVelocity() - GetVelocity();
                                            })
-        / (float)m_neighbors.size();
+        / (float)neighbors.size();
     m_acceleration += alignment_gain * alignment;
 }
 
-void Boid::Cohere()
+void Boid::Cohere(const std::vector<Boid*>& neighbors)
 {
-    const auto cohesion = std::accumulate(m_neighbors.begin(),
-                                          m_neighbors.end(),
+    const auto cohesion = std::accumulate(neighbors.begin(),
+                                          neighbors.end(),
                                           sf::Vector2f(),
                                           [this](const sf::Vector2f& sum, const Boid* boid) {
                                               return sum + boid->getPosition() - getPosition();
                                           })
-        / (float)m_neighbors.size();
+        / (float)neighbors.size();
     m_acceleration += cohesion_gain * cohesion;
 }
 
-void Boid::Separate()
+void Boid::Separate(const std::vector<Boid*>& neighbors)
 {
-    const auto separation = std::accumulate(m_neighbors.begin(),
-                                            m_neighbors.end(),
+    const auto separation = std::accumulate(neighbors.begin(),
+                                            neighbors.end(),
                                             sf::Vector2f(),
                                             [this](const sf::Vector2f& sum, const Boid* boid) {
                                                 const auto diff = getPosition() - boid->getPosition();
                                                 const auto length2 = Length(diff) * Length(diff);
                                                 return sum + diff / length2;
                                             })
-        / (float)m_neighbors.size();
+        / (float)neighbors.size();
     m_acceleration += separation_gain * separation;
 }
 
@@ -173,14 +171,13 @@ void Boid::Dehighlight()
     setFillColor({ brightness, brightness, brightness });
 }
 
-void Boid::SetNeighbors(const std::vector<Boid*>& neighbors)
+void Boid::Flock(const std::vector<Boid*>& neighbors)
 {
-    m_neighbors = neighbors;
-    if (m_neighbors.empty())
+    if (neighbors.empty())
         return;
-    Align();
-    Cohere();
-    Separate();
+    Align(neighbors);
+    Cohere(neighbors);
+    Separate(neighbors);
 }
 
 int main()
@@ -296,6 +293,7 @@ int main()
 
         window.clear();
 
+        auto highlighted_neighbors = std::vector<Boid*>();
         for (auto& boid : boids) {
             boid.Dehighlight();
             auto neighbors = std::vector<Boid*>();
@@ -313,10 +311,12 @@ int main()
                         neighbors.push_back(&neighbor);
                 }
             }
-            boid.SetNeighbors(neighbors);
+            if (&boid == selected_boid)
+                highlighted_neighbors = neighbors;
+            boid.Flock(neighbors);
         }
 
-        for (auto& neighbor : selected_boid->GetNeighbors())
+        for (auto& neighbor : highlighted_neighbors)
             neighbor->Highlight();
 
         const auto elapsed = clock.getElapsedTime().asSeconds();
