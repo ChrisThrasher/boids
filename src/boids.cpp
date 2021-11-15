@@ -50,6 +50,7 @@ class Boid : public sf::ConvexShape {
     bool m_is_selected { false };
     bool m_is_highlighted { false };
 
+    void SetColor();
     void Align(const std::vector<Boid*>& neighbors);
     void Cohere(const std::vector<Boid*>& neighbors);
     void Separate(const std::vector<Boid*>& neighbors);
@@ -76,8 +77,7 @@ Boid::Boid()
     setPoint(1, { -2, -2 });
     setPoint(2, { -1, 0 });
     setPoint(3, { -2, 2 });
-    const auto brightness = brightness_dist(rng);
-    setFillColor({ brightness, brightness, brightness });
+    SetColor();
 
     m_velocity = velocity_dist(rng)
         * sf::Vector2f { std::cos(getRotation() * to_radians), std::sin(getRotation() * to_radians) };
@@ -139,6 +139,12 @@ void Boid::Update(const float dt)
         setPosition(getPosition().x, height);
 }
 
+void Boid::SetColor()
+{
+    const auto brightness = brightness_dist(rng);
+    setFillColor({ brightness, brightness, brightness });
+}
+
 auto Boid::Select() -> Boid*
 {
     m_is_selected = true;
@@ -151,8 +157,7 @@ void Boid::Deselect()
     if (!m_is_selected)
         return;
     m_is_selected = false;
-    const auto brightness = brightness_dist(rng);
-    setFillColor({ brightness, brightness, brightness });
+    SetColor();
 }
 
 void Boid::Highlight()
@@ -166,8 +171,7 @@ void Boid::Dehighlight()
     if (!m_is_highlighted)
         return;
     m_is_highlighted = false;
-    const auto brightness = brightness_dist(rng);
-    setFillColor({ brightness, brightness, brightness });
+    SetColor();
 }
 
 void Boid::Flock(const std::vector<Boid*>& neighbors)
