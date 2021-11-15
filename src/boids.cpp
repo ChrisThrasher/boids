@@ -3,7 +3,6 @@
 #include <array>
 #include <cmath>
 #include <iomanip>
-#include <numbers>
 #include <numeric>
 #include <random>
 #include <sstream>
@@ -13,8 +12,9 @@ static constexpr auto height = 1080u;
 static constexpr auto framerate = 60;
 static constexpr auto min_speed = 250.0f;
 static constexpr auto max_speed = 500.0f;
-static constexpr auto to_radians = std::numbers::pi_v<float> / 180.0f;
-static constexpr auto to_degrees = 180.0f / std::numbers::pi_v<float>;
+static constexpr auto pi = 3.1415926f;
+static constexpr auto to_radians = pi / 180.0f;
+static constexpr auto to_degrees = 180.0f / pi;
 
 static auto random_device = std::random_device();
 static auto rng = std::mt19937(random_device());
@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
 
         auto view_region = sf::ConvexShape(30);
         view_region.setFillColor({ 255, 255, 255, 64 });
-        const auto initial_angle = std::numbers::pi_v<float> / 2.0f - perception_angle;
+        const auto initial_angle = pi / 2.0f - perception_angle;
         const auto delta_theta = 2 * perception_angle / (float)(view_region.getPointCount() - 2);
         for (size_t i = 1; i < view_region.getPointCount(); ++i) {
             const auto theta = initial_angle + (float)i * delta_theta;

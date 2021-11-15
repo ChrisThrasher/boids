@@ -13,7 +13,7 @@ endif()
 add_executable(boids src/boids.cpp)
 target_link_libraries(boids PRIVATE sfml-graphics sfml-window)
 target_compile_definitions(boids PRIVATE FONT_PATH="${CMAKE_SOURCE_DIR}/data")
-target_compile_features(boids PRIVATE cxx_std_20)
+target_compile_features(boids PRIVATE cxx_std_17)
 
 add_custom_target(format
     COMMAND clang-format -i `git ls-files *.cpp *.h`
