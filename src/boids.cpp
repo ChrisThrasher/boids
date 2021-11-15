@@ -55,7 +55,7 @@ public:
 
     void Flock(const std::vector<Boid*>& neighbors);
     void Update(const float dt);
-    auto Select() -> Boid*;
+    void Select();
     void Deselect();
     void Highlight();
     void Dehighlight();
@@ -121,11 +121,7 @@ void Boid::Update(const float dt)
     setPosition((int)(getPosition().x + width) % (int)width, (int)(getPosition().y + height) % (int)height);
 }
 
-auto Boid::Select() -> Boid*
-{
-    setFillColor(sf::Color::Red);
-    return this;
-}
+void Boid::Select() { setFillColor(sf::Color::Red); }
 
 void Boid::Deselect() { setFillColor(m_color); }
 
@@ -139,7 +135,8 @@ int main(int argc, char* argv[])
     if (argc > 1)
         num_boids = std::stoull(argv[1]);
     auto boids = std::vector<Boid>(num_boids);
-    auto* selected_boid = boids.front().Select();
+    auto* selected_boid = &boids.front();
+    selected_boid->Select();
 
     auto clock = sf::Clock();
     auto font = sf::Font();
@@ -167,7 +164,8 @@ int main(int argc, char* argv[])
                 switch (event.key.code) {
                 case sf::Keyboard::Space:
                     boids = std::vector<Boid>(num_boids);
-                    selected_boid = boids.front().Select();
+                    selected_boid = &boids.front();
+                    selected_boid->Select();
                     break;
                 case sf::Keyboard::A:
                     control = Control::ALIGNMENT;
