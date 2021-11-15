@@ -47,10 +47,9 @@ static auto Clamp(const sf::Vector2f& vector, const float min, const float max)
 class Boid : public sf::ConvexShape {
     sf::Vector2f m_velocity {};
     sf::Vector2f m_acceleration {};
+    sf::Color m_color {};
     bool m_is_selected { false };
     bool m_is_highlighted { false };
-
-    void SetColor();
 
 public:
     Boid();
@@ -74,7 +73,9 @@ Boid::Boid()
     setPoint(1, { -2, -2 });
     setPoint(2, { -1, 0 });
     setPoint(3, { -2, 2 });
-    SetColor();
+    const auto brightness = brightness_dist(rng);
+    m_color = { brightness, brightness, brightness };
+    setFillColor(m_color);
 
     m_velocity = velocity_dist(rng)
         * sf::Vector2f { std::cos(getRotation() * to_radians), std::sin(getRotation() * to_radians) };
@@ -122,12 +123,6 @@ void Boid::Update(const float dt)
     setPosition((int)(getPosition().x + width) % (int)width, (int)(getPosition().y + height) % (int)height);
 }
 
-void Boid::SetColor()
-{
-    const auto brightness = brightness_dist(rng);
-    setFillColor({ brightness, brightness, brightness });
-}
-
 auto Boid::Select() -> Boid*
 {
     m_is_selected = true;
@@ -137,10 +132,9 @@ auto Boid::Select() -> Boid*
 
 void Boid::Deselect()
 {
-    if (!m_is_selected)
-        return;
+    if (m_is_selected)
+        setFillColor(m_color);
     m_is_selected = false;
-    SetColor();
 }
 
 void Boid::Highlight()
@@ -151,10 +145,9 @@ void Boid::Highlight()
 
 void Boid::Dehighlight()
 {
-    if (!m_is_highlighted)
-        return;
+    if (m_is_highlighted)
+        setFillColor(m_color);
     m_is_highlighted = false;
-    SetColor();
 }
 
 int main()
