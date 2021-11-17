@@ -1,11 +1,11 @@
 #include <SFML/Graphics.hpp>
 
-#include <array>
 #include <cmath>
 #include <iomanip>
 #include <numeric>
 #include <random>
 #include <sstream>
+#include <vector>
 
 static constexpr auto width = 1920u;
 static constexpr auto height = 1080u;
