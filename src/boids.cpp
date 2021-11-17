@@ -56,7 +56,6 @@ public:
     void Flock(const std::vector<Boid*>& neighbors);
     void Update(const float dt);
     void Select() { setFillColor(sf::Color::Red); }
-    void Deselect() { setFillColor(m_color); }
     void Highlight() { setFillColor(sf::Color::Yellow); }
     void Dehighlight() { setFillColor(m_color); }
 };
@@ -212,7 +211,6 @@ int main(int argc, char* argv[])
                 break;
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    selected_boid->Deselect();
                     const auto mouse = sf::Vector2f { (float)event.mouseButton.x, (float)event.mouseButton.y };
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
