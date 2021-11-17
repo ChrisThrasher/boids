@@ -85,27 +85,22 @@ void Boid::Flock(const std::vector<Boid*>& neighbors)
     if (neighbors.empty())
         return;
 
-    const auto alignment = std::accumulate(neighbors.begin(),
-                                           neighbors.end(),
-                                           sf::Vector2f {},
-                                           [this](const sf::Vector2f& sum, const Boid* boid) {
-                                               return sum + boid->GetVelocity() - GetVelocity();
-                                           })
+    const auto for_all_neighbors = [neighbors](const auto& transform) {
+        return std::accumulate(neighbors.begin(), neighbors.end(), sf::Vector2f {}, transform);
+    };
+
+    const auto alignment = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
+                               return sum + boid->GetVelocity() - GetVelocity();
+                           })
         * alignment_gain;
-    const auto cohesion = std::accumulate(neighbors.begin(),
-                                          neighbors.end(),
-                                          sf::Vector2f {},
-                                          [this](const sf::Vector2f& sum, const Boid* boid) {
-                                              return sum + boid->getPosition() - getPosition();
-                                          })
+    const auto cohesion = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
+                              return sum + boid->getPosition() - getPosition();
+                          })
         * cohesion_gain;
-    const auto separation = std::accumulate(neighbors.begin(),
-                                            neighbors.end(),
-                                            sf::Vector2f {},
-                                            [this](const sf::Vector2f& sum, const Boid* boid) {
-                                                const auto diff = getPosition() - boid->getPosition();
-                                                return sum + diff / Length2(diff);
-                                            })
+    const auto separation = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
+                                const auto diff = getPosition() - boid->getPosition();
+                                return sum + diff / Length2(diff);
+                            })
         * separation_gain;
 
     m_acceleration = (alignment + cohesion + separation) / (float)neighbors.size();
