@@ -64,16 +64,15 @@ public:
 Boid::Boid()
     : sf::ConvexShape(4)
 {
-    setScale(10.0f, 10.0f);
-    setPosition({ x_position_dist(rng), y_position_dist(rng) });
-    setRotation(rotation_dist(rng));
     setPoint(0, { 2, 0 });
     setPoint(1, { -2, -2 });
     setPoint(2, { -1, 0 });
     setPoint(3, { -2, 2 });
+    setScale(10.0f, 10.0f);
+    setPosition({ x_position_dist(rng), y_position_dist(rng) });
+    setRotation(rotation_dist(rng));
     const auto brightness = brightness_dist(rng);
-    m_color = { brightness, brightness, brightness };
-    setFillColor(m_color);
+    setFillColor(m_color = { brightness, brightness, brightness });
 
     m_velocity = velocity_dist(rng)
         * sf::Vector2f { std::cos(getRotation() * to_radians), std::sin(getRotation() * to_radians) };
