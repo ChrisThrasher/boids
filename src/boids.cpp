@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
         }
         window.draw(*selected_boid);
 
-        auto view_region = sf::ConvexShape(30);
+        auto view_region = sf::ConvexShape(100);
         view_region.setFillColor({ 255, 255, 255, 64 });
         const auto delta_theta = 2 * perception_angle / (float)(view_region.getPointCount() - 2);
         const auto initial_angle = pi / 2.0f - perception_angle - delta_theta;
