@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
                         perception_radius += 5.0f;
                         break;
                     case Control::ANGLE:
-                        perception_angle += 5.0f * to_radians;
+                        perception_angle = std::min(perception_angle + 5.0f * to_radians, 180.0f * to_radians);
                         break;
                     }
                     break;
@@ -199,10 +199,10 @@ int main(int argc, char* argv[])
                         separation_gain /= 2.0f;
                         break;
                     case Control::RADIUS:
-                        perception_radius -= 5.0f;
+                        perception_radius = std::max(perception_radius - 5.0f, 0.0f);
                         break;
                     case Control::ANGLE:
-                        perception_angle -= 5.0f * to_radians;
+                        perception_angle = std::max(perception_angle - 5.0f * to_radians, 0.0f);
                         break;
                     }
                     break;
