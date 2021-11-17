@@ -22,7 +22,7 @@ static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, width)
 static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, height);
 static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
 static auto velocity_dist = std::uniform_real_distribution<float>(min_speed, max_speed);
-static auto brightness_dist = std::uniform_int_distribution<uint8_t>(128, 255);
+static auto brightness_dist = std::uniform_int_distribution<sf::Uint8>(128, 255);
 
 static auto alignment_gain = 4e1f;
 static auto cohesion_gain = 4e2f;
