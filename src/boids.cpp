@@ -51,7 +51,7 @@ class Boid : public sf::ConvexShape {
 
 public:
     Boid();
-    const auto& GetVelocity() const { return m_velocity; }
+    auto GetVelocity() const -> const auto& { return m_velocity; }
 
     void Flock(const std::vector<Boid*>& neighbors);
     void Update(const float dt);
