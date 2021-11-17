@@ -57,7 +57,7 @@ public:
     void Update(const float dt);
     void Select() { setFillColor(sf::Color::Red); }
     void Highlight() { setFillColor(sf::Color::Yellow); }
-    void Dehighlight() { setFillColor(m_color); }
+    void ResetColor() { setFillColor(m_color); }
 };
 
 Boid::Boid()
@@ -71,7 +71,8 @@ Boid::Boid()
     setPosition({ x_position_dist(rng), y_position_dist(rng) });
     setRotation(rotation_dist(rng));
     const auto brightness = brightness_dist(rng);
-    setFillColor(m_color = { brightness, brightness, brightness });
+    m_color = { brightness, brightness, brightness };
+    ResetColor();
 
     m_velocity = velocity_dist(rng)
         * sf::Vector2f { std::cos(getRotation() * to_radians), std::sin(getRotation() * to_radians) };
@@ -250,7 +251,7 @@ int main(int argc, char* argv[])
             if (&boid == selected_boid)
                 highlighted_neighbors = neighbors;
             else
-                boid.Dehighlight();
+                boid.ResetColor();
         }
 
         for (auto& neighbor : highlighted_neighbors)
