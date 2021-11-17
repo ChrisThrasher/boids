@@ -55,10 +55,10 @@ public:
 
     void Flock(const std::vector<Boid*>& neighbors);
     void Update(const float dt);
-    void Select();
-    void Deselect();
-    void Highlight();
-    void Dehighlight();
+    void Select() { setFillColor(sf::Color::Red); }
+    void Deselect() { setFillColor(m_color); }
+    void Highlight() { setFillColor(sf::Color::Yellow); }
+    void Dehighlight() { setFillColor(m_color); }
 };
 
 Boid::Boid()
@@ -114,14 +114,6 @@ void Boid::Update(const float dt)
     setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
     setPosition(fmodf(getPosition().x + width, width), fmodf(getPosition().y + height, height));
 }
-
-void Boid::Select() { setFillColor(sf::Color::Red); }
-
-void Boid::Deselect() { setFillColor(m_color); }
-
-void Boid::Highlight() { setFillColor(sf::Color::Yellow); }
-
-void Boid::Dehighlight() { setFillColor(m_color); }
 
 int main(int argc, char* argv[])
 {
