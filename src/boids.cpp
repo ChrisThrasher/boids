@@ -190,13 +190,13 @@ int main(int argc, char* argv[])
                 case sf::Keyboard::Down:
                     switch (control) {
                     case Control::ALIGNMENT:
-                        alignment_gain /= 2.0f;
+                        alignment_gain = std::max(alignment_gain / 2.0f, 1.0f);
                         break;
                     case Control::COHESION:
-                        cohesion_gain /= 2.0f;
+                        cohesion_gain = std::max(cohesion_gain / 2.0f, 1.0f);
                         break;
                     case Control::SEPARATION:
-                        separation_gain /= 2.0f;
+                        separation_gain = std::max(separation_gain / 2.0f, 1.0f);
                         break;
                     case Control::RADIUS:
                         perception_radius = std::max(perception_radius - 5.0f, 0.0f);
