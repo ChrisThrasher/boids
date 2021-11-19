@@ -169,13 +169,13 @@ int main(int argc, char* argv[])
                 case sf::Keyboard::Up:
                     switch (control) {
                     case Control::ALIGNMENT:
-                        alignment_gain *= 2.0f;
+                        alignment_gain = std::min(alignment_gain * 2.0f, 1e16f);
                         break;
                     case Control::COHESION:
-                        cohesion_gain *= 2.0f;
+                        cohesion_gain = std::min(cohesion_gain * 2.0f, 1e16f);
                         break;
                     case Control::SEPARATION:
-                        separation_gain *= 2.0f;
+                        separation_gain = std::min(separation_gain * 2.0f, 1e16f);
                         break;
                     case Control::RADIUS:
                         perception_radius += 5.0f;
