@@ -16,8 +16,7 @@ static constexpr auto pi = 3.1415926f;
 static constexpr auto to_radians = pi / 180.0f;
 static constexpr auto to_degrees = 180.0f / pi;
 
-static auto random_device = std::random_device();
-static auto rng = std::mt19937(random_device());
+static auto rng = std::mt19937(std::random_device()());
 static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, width);
 static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, height);
 static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
