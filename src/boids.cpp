@@ -9,7 +9,6 @@
 
 static constexpr auto width = 1920u;
 static constexpr auto height = 1080u;
-static constexpr auto framerate = 60;
 static constexpr auto min_speed = 250.0f;
 static constexpr auto max_speed = 500.0f;
 static constexpr auto pi = 3.1415926f;
@@ -134,7 +133,7 @@ int main(int argc, char* argv[])
     text.setPosition({ 10.0f, 5.0f });
 
     auto window = sf::RenderWindow(sf::VideoMode(width, height), std::to_string(num_boids) + " Boids");
-    window.setFramerateLimit(framerate);
+    window.setFramerateLimit(60);
 
     enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
 
