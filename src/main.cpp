@@ -1,6 +1,6 @@
-#include <SFML/Graphics.hpp>
+#include "boid.h"
+#include "vector_utils.h"
 
-#include <cmath>
 #include <iomanip>
 #include <numeric>
 #include <random>
@@ -9,108 +9,18 @@
 
 static constexpr auto width = 1920u;
 static constexpr auto height = 1080u;
-static constexpr auto min_speed = 250.0f;
-static constexpr auto max_speed = 500.0f;
-static constexpr auto pi = 3.1415926f;
-static constexpr auto to_radians = pi / 180.0f;
-static constexpr auto to_degrees = 180.0f / pi;
 
 static auto rng = std::mt19937(std::random_device()());
 static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, width);
 static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, height);
 static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
-static auto velocity_dist = std::uniform_real_distribution<float>(min_speed, max_speed);
-static auto brightness_dist = std::uniform_int_distribution<sf::Uint8>(128, 255);
 
-static auto alignment_gain = 4e1f;
-static auto cohesion_gain = 4e2f;
-static auto separation_gain = 2e6f;
-static auto perception_radius = 100.0f;
-static auto perception_angle = 135.0f * to_radians;
-
-static auto Dot(const sf::Vector2f& lhs, const sf::Vector2f& rhs) { return lhs.x * rhs.x + lhs.y * rhs.y; }
-
-static auto Length2(const sf::Vector2f& vector) noexcept { return Dot(vector, vector); }
-
-static auto Length(const sf::Vector2f& vector) noexcept { return std::sqrt(Length2(vector)); }
-
-static auto Clamp(const sf::Vector2f& vector, const float min, const float max)
+static auto MakeBoids(const size_t num_boids)
 {
-    const auto length = Length(vector);
-    if (length == 0.0f)
-        return vector;
-    return vector * std::clamp(length, min, max) / length;
-}
-
-class Boid : public sf::ConvexShape {
-    sf::Vector2f m_velocity {};
-    sf::Vector2f m_acceleration {};
-    sf::Color m_color {};
-
-public:
-    Boid();
-    auto GetVelocity() const -> const auto& { return m_velocity; }
-
-    void Flock(const std::vector<Boid*>& neighbors);
-    void Update(const float dt);
-    void Select() { setFillColor(sf::Color::Red); }
-    void Highlight() { setFillColor(sf::Color::Yellow); }
-    void ResetColor() { setFillColor(m_color); }
-};
-
-Boid::Boid()
-    : sf::ConvexShape(4)
-{
-    setPoint(0, { 2, 0 });
-    setPoint(1, { -2, -2 });
-    setPoint(2, { -1, 0 });
-    setPoint(3, { -2, 2 });
-    setScale(10.0f, 10.0f);
-    setPosition({ x_position_dist(rng), y_position_dist(rng) });
-    setRotation(rotation_dist(rng));
-    const auto brightness = brightness_dist(rng);
-    m_color = { brightness, brightness, brightness };
-    ResetColor();
-
-    m_velocity = velocity_dist(rng)
-        * sf::Vector2f { std::cos(getRotation() * to_radians), std::sin(getRotation() * to_radians) };
-}
-
-void Boid::Flock(const std::vector<Boid*>& neighbors)
-{
-    m_acceleration = {};
-    if (neighbors.empty())
-        return;
-
-    const auto for_all_neighbors = [neighbors](const auto& transform) {
-        return std::accumulate(neighbors.begin(), neighbors.end(), sf::Vector2f {}, transform);
-    };
-
-    const auto alignment = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
-                               return sum + boid->GetVelocity() - GetVelocity();
-                           })
-        * alignment_gain;
-    const auto cohesion = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
-                              return sum + boid->getPosition() - getPosition();
-                          })
-        * cohesion_gain;
-    const auto separation = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
-                                const auto diff = getPosition() - boid->getPosition();
-                                return sum + diff / Length2(diff);
-                            })
-        * separation_gain;
-
-    m_acceleration = (alignment + cohesion + separation) / (float)neighbors.size();
-    m_acceleration = Clamp(m_acceleration, 0.0f, 500.0f);
-}
-
-void Boid::Update(const float dt)
-{
-    move(dt * m_velocity);
-    m_velocity = Clamp(m_velocity + dt * m_acceleration, min_speed, max_speed);
-
-    setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
-    setPosition(fmodf(getPosition().x + width, width), fmodf(getPosition().y + height, height));
+    auto boids = std::vector<Boid>();
+    for (size_t i = 0; i < num_boids; ++i)
+        boids.emplace_back(sf::Vector2f(x_position_dist(rng), y_position_dist(rng)), rotation_dist(rng));
+    return boids;
 }
 
 int main(int argc, char* argv[])
@@ -118,9 +28,13 @@ int main(int argc, char* argv[])
     size_t num_boids = 250;
     if (argc > 1)
         num_boids = std::stoull(argv[1]);
-    auto boids = std::vector<Boid>(num_boids);
+    auto boids = MakeBoids(num_boids);
     auto* selected_boid = &boids.front();
     selected_boid->Select();
+
+    auto gain = Boid::Gain { 4e1f, 4e2f, 2e6f };
+    auto perception_radius = 100.0f;
+    auto perception_angle = 135.0f * to_radians;
 
     auto clock = sf::Clock();
     auto font = sf::Font();
@@ -147,7 +61,7 @@ int main(int argc, char* argv[])
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
                 case sf::Keyboard::Space:
-                    boids = std::vector<Boid>(num_boids);
+                    boids = MakeBoids(num_boids);
                     selected_boid = &boids.front();
                     selected_boid->Select();
                     break;
@@ -169,13 +83,13 @@ int main(int argc, char* argv[])
                 case sf::Keyboard::Up:
                     switch (control) {
                     case Control::ALIGNMENT:
-                        alignment_gain = std::min(alignment_gain * 2.0f, 1e16f);
+                        gain.alignment = std::min(gain.alignment * 2.0f, 1e16f);
                         break;
                     case Control::COHESION:
-                        cohesion_gain = std::min(cohesion_gain * 2.0f, 1e16f);
+                        gain.cohesion = std::min(gain.cohesion * 2.0f, 1e16f);
                         break;
                     case Control::SEPARATION:
-                        separation_gain = std::min(separation_gain * 2.0f, 1e16f);
+                        gain.separation = std::min(gain.separation * 2.0f, 1e16f);
                         break;
                     case Control::RADIUS:
                         perception_radius += 5.0f;
@@ -188,13 +102,13 @@ int main(int argc, char* argv[])
                 case sf::Keyboard::Down:
                     switch (control) {
                     case Control::ALIGNMENT:
-                        alignment_gain = std::max(alignment_gain / 2.0f, 1.0f);
+                        gain.alignment = std::max(gain.alignment / 2.0f, 1.0f);
                         break;
                     case Control::COHESION:
-                        cohesion_gain = std::max(cohesion_gain / 2.0f, 1.0f);
+                        gain.cohesion = std::max(gain.cohesion / 2.0f, 1.0f);
                         break;
                     case Control::SEPARATION:
-                        separation_gain = std::max(separation_gain / 2.0f, 1.0f);
+                        gain.separation = std::max(gain.separation / 2.0f, 1.0f);
                         break;
                     case Control::RADIUS:
                         perception_radius = std::max(perception_radius - 5.0f, 0.0f);
@@ -245,7 +159,7 @@ int main(int argc, char* argv[])
                         neighbors.push_back(&neighbor);
                 }
             }
-            boid.Flock(neighbors);
+            boid.Flock(neighbors, gain);
             if (&boid == selected_boid)
                 highlighted_neighbors = neighbors;
             else
@@ -257,7 +171,7 @@ int main(int argc, char* argv[])
 
         const auto elapsed = clock.restart().asSeconds();
         for (auto& boid : boids) {
-            boid.Update(elapsed);
+            boid.Update(elapsed, width, height);
             window.draw(boid);
         }
         window.draw(*selected_boid);
@@ -277,9 +191,9 @@ int main(int argc, char* argv[])
 
         auto text_builder = std::ostringstream();
         text_builder << std::setprecision(1) << std::scientific;
-        text_builder << alignment_gain << " (A) alignment" << (control == Control::ALIGNMENT ? " <" : "") << '\n';
-        text_builder << cohesion_gain << " (C) cohesion" << (control == Control::COHESION ? " <" : "") << '\n';
-        text_builder << separation_gain << " (S) separation" << (control == Control::SEPARATION ? " <" : "") << '\n';
+        text_builder << gain.alignment << " (A) alignment" << (control == Control::ALIGNMENT ? " <" : "") << '\n';
+        text_builder << gain.cohesion << " (C) cohesion" << (control == Control::COHESION ? " <" : "") << '\n';
+        text_builder << gain.separation << " (S) separation" << (control == Control::SEPARATION ? " <" : "") << '\n';
         text_builder << std::setprecision(0) << std::fixed;
         text_builder << perception_radius << " (R) radius" << (control == Control::RADIUS ? " <" : "") << '\n';
         text_builder << 2 * perception_angle * to_degrees << " (G) angle" << (control == Control::ANGLE ? " <" : "")

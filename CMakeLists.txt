@@ -10,7 +10,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
     add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion)
 endif()
 
-add_executable(boids src/boids.cpp)
+add_executable(boids src/main.cpp src/boid.cpp)
 target_link_libraries(boids PRIVATE sfml-graphics sfml-window)
 target_compile_definitions(boids PRIVATE FONT_PATH="${CMAKE_SOURCE_DIR}/data")
 target_compile_features(boids PRIVATE cxx_std_17)
