@@ -7,12 +7,11 @@
 #include <sstream>
 #include <vector>
 
-static constexpr auto width = 1920u;
-static constexpr auto height = 1080u;
+static const auto video_mode = sf::VideoMode(1920, 1080);
 
 static auto rng = std::mt19937(std::random_device()());
-static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, width);
-static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, height);
+static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.width);
+static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.height);
 static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
 
 static auto MakeBoids(const size_t num_boids)
@@ -46,7 +45,7 @@ int main(int argc, char* argv[])
     text.setOutlineColor(sf::Color::Black);
     text.setPosition({ 10.0f, 5.0f });
 
-    auto window = sf::RenderWindow(sf::VideoMode(width, height), std::to_string(num_boids) + " Boids");
+    auto window = sf::RenderWindow(video_mode, std::to_string(num_boids) + " Boids");
     window.setFramerateLimit(60);
 
     enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
@@ -171,7 +170,7 @@ int main(int argc, char* argv[])
 
         const auto elapsed = clock.restart().asSeconds();
         for (auto& boid : boids) {
-            boid.Update(elapsed, width, height);
+            boid.Update(elapsed, video_mode);
             window.draw(boid);
         }
         window.draw(*selected_boid);

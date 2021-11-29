@@ -56,11 +56,13 @@ void Boid::Flock(const std::vector<Boid*>& neighbors, const Gain& gain)
     m_acceleration = Clamp(m_acceleration, 0.0f, 500.0f);
 }
 
-void Boid::Update(const float dt, const unsigned width, const unsigned height)
+void Boid::Update(const float dt, const sf::VideoMode& video_mode)
 {
     move(dt * m_velocity);
     m_velocity = Clamp(m_velocity + dt * m_acceleration, min_speed, max_speed);
 
+    const auto width = (float)video_mode.width;
+    const auto height = (float)video_mode.height;
     setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
     setPosition(fmodf(getPosition().x + width, width), fmodf(getPosition().y + height, height));
 }

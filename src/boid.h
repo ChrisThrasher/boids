@@ -18,7 +18,7 @@ public:
     auto GetVelocity() const -> const auto& { return m_velocity; }
 
     void Flock(const std::vector<Boid*>& neighbors, const Gain& gain);
-    void Update(const float dt, const unsigned width, const unsigned height);
+    void Update(const float dt, const sf::VideoMode& video_mode);
     void Select() { setFillColor(sf::Color::Red); }
     void Highlight() { setFillColor(sf::Color::Yellow); }
     void ResetColor() { setFillColor(m_color); }
