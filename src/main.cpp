@@ -145,19 +145,9 @@ int main(int argc, char* argv[])
         auto highlighted_neighbors = std::vector<Boid*>();
         for (auto& boid : boids) {
             auto neighbors = std::vector<Boid*>();
-            for (auto& neighbor : boids) {
-                if (&boid == &neighbor)
-                    continue;
-                const auto to_neighbor = neighbor.getPosition() - boid.getPosition();
-                const auto is_within_radius = Length2(to_neighbor) < perception_radius * perception_radius;
-                if (is_within_radius) {
-                    const auto is_within_view
-                        = Dot(to_neighbor, boid.GetVelocity()) / (Length(to_neighbor) * Length(boid.GetVelocity()))
-                        > std::cos(perception_angle);
-                    if (is_within_view)
-                        neighbors.push_back(&neighbor);
-                }
-            }
+            for (auto& neighbor : boids)
+                if (boid.CanSee(neighbor, perception_radius, perception_angle))
+                    neighbors.push_back(&neighbor);
             boid.Flock(neighbors, gain);
             if (&boid == selected_boid)
                 highlighted_neighbors = neighbors;

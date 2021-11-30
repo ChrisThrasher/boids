@@ -66,3 +66,18 @@ void Boid::Update(const float dt, const sf::VideoMode& video_mode)
     setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
     setPosition(fmodf(getPosition().x + width, width), fmodf(getPosition().y + height, height));
 }
+
+auto Boid::CanSee(const Boid& neighbor, const float perception_radius, const float perception_angle) const -> bool
+{
+    if (this == &neighbor)
+        return false;
+    const auto to_neighbor = neighbor.getPosition() - getPosition();
+    const auto is_within_radius = Length2(to_neighbor) < perception_radius * perception_radius;
+    if (is_within_radius) {
+        const auto is_within_view
+            = Dot(to_neighbor, m_velocity) / (Length(to_neighbor) * Length(m_velocity)) > std::cos(perception_angle);
+        if (is_within_view)
+            return true;
+    }
+    return false;
+}
