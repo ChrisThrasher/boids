@@ -1,5 +1,4 @@
 #include "boid.h"
-#include "vector_utils.h"
 
 #include <array>
 #include <iomanip>
@@ -8,7 +7,9 @@
 #include <sstream>
 #include <vector>
 
-static const auto video_mode = sf::VideoMode(1920, 1080);
+using namespace sf::Literals;
+
+static const auto video_mode = sf::VideoMode({ 1280, 720 });
 
 static auto make_boids(const size_t num_boids)
 {
@@ -19,13 +20,13 @@ static auto make_boids(const size_t num_boids)
         auto seed_seq = std::seed_seq(seed_data.begin(), seed_data.end());
         return std::mt19937(seed_seq);
     }();
-    static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.width);
-    static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.height);
+    static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.size.x);
+    static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.size.y);
     static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
 
     auto boids = std::vector<Boid>();
     for (size_t i = 0; i < num_boids; ++i)
-        boids.emplace_back(sf::Vector2f(x_position_dist(rng), y_position_dist(rng)), rotation_dist(rng));
+        boids.emplace_back(sf::Vector2f(x_position_dist(rng), y_position_dist(rng)), sf::degrees(rotation_dist(rng)));
     return boids;
 }
 
@@ -35,16 +36,17 @@ int main(int argc, char* argv[])
     if (argc > 1)
         num_boids = std::stoull(argv[1]);
     auto boids = make_boids(num_boids);
-    auto* selected_boid = &boids.front();
+    auto selected_boid = &boids.front();
     selected_boid->select();
 
     auto gain = Boid::Gain { 4e1f, 4e2f, 2e6f };
     auto perception_radius = 100.0f;
-    auto perception_angle = 135.0f * to_radians;
+    auto perception_angle = 135_deg;
 
     auto clock = sf::Clock();
     auto font = sf::Font();
-    font.loadFromFile(std::string(FONT_PATH) + "/font.ttf");
+    if (!font.loadFromFile(FONT_PATH / std::filesystem::path("font.ttf")))
+        throw std::runtime_error("Failed to load font");
 
     auto text = sf::Text("", font, 24);
     text.setFillColor(sf::Color::White);
@@ -100,7 +102,7 @@ int main(int argc, char* argv[])
                         perception_radius += 5.0f;
                         break;
                     case Control::ANGLE:
-                        perception_angle = std::min(perception_angle + 5.0f * to_radians, 180.0f * to_radians);
+                        perception_angle = std::min(perception_angle + 5_deg, 180_deg);
                         break;
                     }
                     break;
@@ -119,7 +121,7 @@ int main(int argc, char* argv[])
                         perception_radius = std::max(perception_radius - 5.0f, 0.0f);
                         break;
                     case Control::ANGLE:
-                        perception_angle = std::max(perception_angle - 5.0f * to_radians, 0.0f);
+                        perception_angle = std::max(perception_angle - 5_deg, 0_deg);
                         break;
                     }
                     break;
@@ -129,10 +131,10 @@ int main(int argc, char* argv[])
                 break;
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    const auto mouse = sf::Vector2f { (float)event.mouseButton.x, (float)event.mouseButton.y };
+                    const auto mouse = sf::Vector2f((float)event.mouseButton.x, (float)event.mouseButton.y);
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
-                        const auto distance = length2(boid.getPosition() - mouse);
+                        const auto distance = (boid.getPosition() - mouse).lengthSq();
                         if (distance < min_distance) {
                             min_distance = distance;
                             selected_boid = &boid;
@@ -164,7 +166,7 @@ int main(int argc, char* argv[])
         for (auto& neighbor : highlighted_neighbors)
             neighbor->highlight();
 
-        const auto elapsed = clock.restart().asSeconds();
+        const auto elapsed = clock.restart();
         for (auto& boid : boids) {
             boid.update(elapsed, video_mode);
             window.draw(boid);
@@ -174,10 +176,10 @@ int main(int argc, char* argv[])
         auto view_region = sf::ConvexShape(100);
         view_region.setFillColor({ 255, 255, 255, 64 });
         const auto delta_theta = 2 * perception_angle / (float)(view_region.getPointCount() - 2);
-        const auto initial_angle = pi / 2.0f - perception_angle - delta_theta;
+        const auto initial_angle = 90_deg - perception_angle - delta_theta;
         for (size_t i = 1; i < view_region.getPointCount(); ++i) {
             const auto theta = initial_angle + (float)i * delta_theta;
-            const auto point = perception_radius * sf::Vector2f(std::sin(theta), std::cos(theta));
+            const auto point = perception_radius * -sf::Vector2f::UnitY.rotatedBy(theta);
             view_region.setPoint(i, point);
         }
         view_region.setPosition(selected_boid->getPosition());
@@ -191,9 +193,9 @@ int main(int argc, char* argv[])
         text_builder << gain.separation << " (S) separation" << (control == Control::SEPARATION ? " <" : "") << '\n';
         text_builder << std::setprecision(0) << std::fixed;
         text_builder << perception_radius << " (R) radius" << (control == Control::RADIUS ? " <" : "") << '\n';
-        text_builder << 2 * perception_angle * to_degrees << " (G) angle" << (control == Control::ANGLE ? " <" : "")
+        text_builder << 2 * perception_angle.asDegrees() << " (G) angle" << (control == Control::ANGLE ? " <" : "")
                      << '\n';
-        text_builder << std::setw(3) << 1.0f / elapsed << " fps\n";
+        text_builder << std::setw(3) << 1.0f / elapsed.asSeconds() << " fps\n";
         text.setString(text_builder.str());
         window.draw(text);
 

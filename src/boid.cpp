@@ -1,5 +1,4 @@
 #include "boid.h"
-#include "vector_utils.h"
 
 #include <algorithm>
 #include <array>
@@ -16,24 +15,30 @@ static auto rng = []() {
     return std::mt19937(seed_seq);
 }();
 static auto brightness_dist = std::uniform_int_distribution<sf::Uint8>(128, 255);
-static auto velocity_dist = std::uniform_real_distribution<float>(min_speed, max_speed);
+static auto speed_dist = std::uniform_real_distribution<float>(min_speed, max_speed);
 
-Boid::Boid(const sf::Vector2f& position, const float rotation)
+static auto clamp(const sf::Vector2f& vector, const float min, const float max)
+{
+    const auto length = vector.length();
+    if (length == 0.0f)
+        return vector;
+    return vector.normalized() * std::clamp(length, min, max);
+}
+
+Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
     : sf::ConvexShape(4)
+    , m_velocity(speed_dist(rng), rotation)
 {
     setPoint(0, { 2, 0 });
     setPoint(1, { -2, -2 });
     setPoint(2, { -1, 0 });
     setPoint(3, { -2, 2 });
-    setScale(10.0f, 10.0f);
+    setScale({ 10.0f, 10.0f });
     setPosition(position);
     setRotation(rotation);
     const auto brightness = brightness_dist(rng);
     m_color = { brightness, brightness, brightness };
     reset_color();
-
-    m_velocity = velocity_dist(rng)
-        * sf::Vector2f { std::cos(getRotation() * to_radians), std::sin(getRotation() * to_radians) };
 }
 
 void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
@@ -56,7 +61,7 @@ void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
         * gain.cohesion;
     const auto separation = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
                                 const auto diff = getPosition() - boid->getPosition();
-                                return sum + diff / length2(diff);
+                                return sum + diff / diff.lengthSq();
                             })
         * gain.separation;
 
@@ -64,27 +69,26 @@ void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
     m_acceleration = clamp(m_acceleration, 0.0f, 500.0f);
 }
 
-void Boid::update(const float dt, const sf::VideoMode& video_mode)
+void Boid::update(const sf::Time& dt, const sf::VideoMode& video_mode)
 {
-    move(dt * m_velocity);
-    m_velocity = clamp(m_velocity + dt * m_acceleration, min_speed, max_speed);
+    move(dt.asSeconds() * m_velocity);
+    m_velocity = clamp(m_velocity + dt.asSeconds() * m_acceleration, min_speed, max_speed);
 
-    const auto width = (float)video_mode.width;
-    const auto height = (float)video_mode.height;
-    setRotation(std::atan2(m_velocity.y, m_velocity.x) * to_degrees);
-    setPosition(fmodf(getPosition().x + width, width), fmodf(getPosition().y + height, height));
+    const auto width = (float)video_mode.size.x;
+    const auto height = (float)video_mode.size.y;
+    setRotation(m_velocity.angle());
+    setPosition({ fmodf(getPosition().x + width, width), fmodf(getPosition().y + height, height) });
 }
 
-auto Boid::can_see(const Boid& neighbor, const float perception_radius, const float perception_angle) const -> bool
+auto Boid::can_see(const Boid& neighbor, const float perception_radius, const sf::Angle& perception_angle) const -> bool
 {
     if (this == &neighbor)
         return false;
     const auto to_neighbor = neighbor.getPosition() - getPosition();
-    const auto is_within_radius = length2(to_neighbor) < perception_radius * perception_radius;
-    if (is_within_radius) {
-        const auto is_within_view
-            = dot(to_neighbor, m_velocity) / (length(to_neighbor) * length(m_velocity)) > std::cos(perception_angle);
-        if (is_within_view)
+    const auto is_within_radius = to_neighbor.lengthSq() < perception_radius * perception_radius;
+    if (is_within_radius && to_neighbor != sf::Vector2f()) {
+        const auto angle_to_neighbor = m_velocity.angleTo(to_neighbor);
+        if (angle_to_neighbor < perception_angle && angle_to_neighbor > -perception_angle)
             return true;
     }
     return false;

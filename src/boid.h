@@ -14,13 +14,13 @@ public:
         float separation;
     };
 
-    Boid(const sf::Vector2f& position, const float rotation);
+    Boid(const sf::Vector2f& position, const sf::Angle& rotation);
     auto get_velocity() const -> const auto& { return m_velocity; }
 
     void flock(const std::vector<Boid*>& neighbors, const Gain& gain);
-    void update(const float dt, const sf::VideoMode& video_mode);
+    void update(const sf::Time& dt, const sf::VideoMode& video_mode);
     void select() { setFillColor(sf::Color::Red); }
     void highlight() { setFillColor(sf::Color::Yellow); }
     void reset_color() { setFillColor(m_color); }
-    auto can_see(const Boid& neighbor, const float perception_radius, const float perception_angle) const -> bool;
+    auto can_see(const Boid& neighbor, const float perception_radius, const sf::Angle& perception_angle) const -> bool;
 };

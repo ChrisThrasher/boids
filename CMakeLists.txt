@@ -4,18 +4,21 @@ project(boids CXX)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(SFML 2.5.1 REQUIRED COMPONENTS graphics)
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
     add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion)
     add_compile_options("$<$<CONFIG:DEBUG>:-fsanitize=address,undefined>")
     add_link_options("$<$<CONFIG:DEBUG>:-fsanitize=address,undefined>")
 endif()
 
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY "https://github.com/SFML/SFML.git"
+    GIT_TAG master)
+FetchContent_MakeAvailable(SFML)
+
 add_executable(boids src/main.cpp src/boid.cpp)
-target_link_libraries(boids PRIVATE sfml-graphics)
+target_link_libraries(boids PRIVATE SFML::Graphics)
 target_compile_definitions(boids PRIVATE FONT_PATH="${CMAKE_SOURCE_DIR}/data")
-target_compile_features(boids PRIVATE cxx_std_17)
 
 add_custom_target(format
     COMMAND clang-format -i `git ls-files *.cpp *.h`

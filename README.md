@@ -7,7 +7,6 @@ SFML-based flocking simulation program
 # Requirements
  * C++17
  * CMake 3.16
- * SFML 2.5.1
 
 # Building & Running
 
