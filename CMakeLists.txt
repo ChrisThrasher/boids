@@ -4,14 +4,14 @@ project(boids CXX)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(SFML 2.5.1 REQUIRED COMPONENTS graphics window)
+find_package(SFML 2.5.1 REQUIRED COMPONENTS graphics)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
     add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion)
 endif()
 
 add_executable(boids src/main.cpp src/boid.cpp)
-target_link_libraries(boids PRIVATE sfml-graphics sfml-window)
+target_link_libraries(boids PRIVATE sfml-graphics)
 target_compile_definitions(boids PRIVATE FONT_PATH="${CMAKE_SOURCE_DIR}/data")
 target_compile_features(boids PRIVATE cxx_std_17)
 
