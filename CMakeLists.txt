@@ -8,6 +8,8 @@ find_package(SFML 2.5.1 REQUIRED COMPONENTS graphics)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
     add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion)
+    add_compile_options("$<$<CONFIG:DEBUG>:-fsanitize=address,undefined>")
+    add_link_options("$<$<CONFIG:DEBUG>:-fsanitize=address,undefined>")
 endif()
 
 add_executable(boids src/main.cpp src/boid.cpp)
