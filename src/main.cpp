@@ -9,13 +9,13 @@
 
 static const auto video_mode = sf::VideoMode(1920, 1080);
 
-static auto rng = std::mt19937(std::random_device()());
-static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.width);
-static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.height);
-static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
-
 static auto MakeBoids(const size_t num_boids)
 {
+    static auto rng = std::mt19937(std::random_device()());
+    static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.width);
+    static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.height);
+    static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
+
     auto boids = std::vector<Boid>();
     for (size_t i = 0; i < num_boids; ++i)
         boids.emplace_back(sf::Vector2f(x_position_dist(rng), y_position_dist(rng)), rotation_dist(rng));
