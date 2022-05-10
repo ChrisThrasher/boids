@@ -51,8 +51,7 @@ int main(int argc, char* argv[])
     enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
 
     while (window.isOpen()) {
-        auto event = sf::Event();
-        while (window.pollEvent(event)) {
+        for (auto event = sf::Event(); window.pollEvent(event);) {
             switch (event.type) {
             case sf::Event::Closed:
                 window.close();
