@@ -15,12 +15,12 @@ public:
     };
 
     Boid(const sf::Vector2f& position, const float rotation);
-    auto GetVelocity() const -> const auto& { return m_velocity; }
+    auto get_velocity() const -> const auto& { return m_velocity; }
 
-    void Flock(const std::vector<Boid*>& neighbors, const Gain& gain);
-    void Update(const float dt, const sf::VideoMode& video_mode);
-    void Select() { setFillColor(sf::Color::Red); }
-    void Highlight() { setFillColor(sf::Color::Yellow); }
-    void ResetColor() { setFillColor(m_color); }
-    auto CanSee(const Boid& neighbor, const float perception_radius, const float perception_angle) const -> bool;
+    void flock(const std::vector<Boid*>& neighbors, const Gain& gain);
+    void update(const float dt, const sf::VideoMode& video_mode);
+    void select() { setFillColor(sf::Color::Red); }
+    void highlight() { setFillColor(sf::Color::Yellow); }
+    void reset_color() { setFillColor(m_color); }
+    auto can_see(const Boid& neighbor, const float perception_radius, const float perception_angle) const -> bool;
 };

@@ -9,16 +9,16 @@ inline constexpr auto pi = 3.1415926f;
 inline constexpr auto to_radians = pi / 180.0f;
 inline constexpr auto to_degrees = 180.0f / pi;
 
-inline auto Dot(const sf::Vector2f& lhs, const sf::Vector2f& rhs) { return lhs.x * rhs.x + lhs.y * rhs.y; }
+inline auto dot(const sf::Vector2f& lhs, const sf::Vector2f& rhs) { return lhs.x * rhs.x + lhs.y * rhs.y; }
 
-inline auto Length2(const sf::Vector2f& vector) noexcept { return Dot(vector, vector); }
+inline auto length2(const sf::Vector2f& vector) noexcept { return dot(vector, vector); }
 
-inline auto Length(const sf::Vector2f& vector) noexcept { return std::sqrt(Length2(vector)); }
+inline auto length(const sf::Vector2f& vector) noexcept { return std::sqrt(length2(vector)); }
 
-inline auto Clamp(const sf::Vector2f& vector, const float min, const float max)
+inline auto clamp(const sf::Vector2f& vector, const float min, const float max)
 {
-    const auto length = Length(vector);
-    if (length == 0.0f)
+    const auto l = length(vector);
+    if (l == 0.0f)
         return vector;
-    return vector * std::clamp(length, min, max) / length;
+    return vector * std::clamp(l, min, max) / l;
 }

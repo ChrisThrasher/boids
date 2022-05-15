@@ -9,7 +9,7 @@
 
 static const auto video_mode = sf::VideoMode(1920, 1080);
 
-static auto MakeBoids(const size_t num_boids)
+static auto make_boids(const size_t num_boids)
 {
     static auto rng = std::mt19937(std::random_device()());
     static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.width);
@@ -27,9 +27,9 @@ int main(int argc, char* argv[])
     size_t num_boids = 250;
     if (argc > 1)
         num_boids = std::stoull(argv[1]);
-    auto boids = MakeBoids(num_boids);
+    auto boids = make_boids(num_boids);
     auto* selected_boid = &boids.front();
-    selected_boid->Select();
+    selected_boid->select();
 
     auto gain = Boid::Gain { 4e1f, 4e2f, 2e6f };
     auto perception_radius = 100.0f;
@@ -59,9 +59,9 @@ int main(int argc, char* argv[])
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
                 case sf::Keyboard::Space:
-                    boids = MakeBoids(num_boids);
+                    boids = make_boids(num_boids);
                     selected_boid = &boids.front();
-                    selected_boid->Select();
+                    selected_boid->select();
                     break;
                 case sf::Keyboard::A:
                     control = Control::ALIGNMENT;
@@ -125,13 +125,13 @@ int main(int argc, char* argv[])
                     const auto mouse = sf::Vector2f { (float)event.mouseButton.x, (float)event.mouseButton.y };
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
-                        const auto distance = Length2(boid.getPosition() - mouse);
+                        const auto distance = length2(boid.getPosition() - mouse);
                         if (distance < min_distance) {
                             min_distance = distance;
                             selected_boid = &boid;
                         }
                     }
-                    selected_boid->Select();
+                    selected_boid->select();
                 }
                 break;
             default:
@@ -145,21 +145,21 @@ int main(int argc, char* argv[])
         for (auto& boid : boids) {
             auto neighbors = std::vector<Boid*>();
             for (auto& neighbor : boids)
-                if (boid.CanSee(neighbor, perception_radius, perception_angle))
+                if (boid.can_see(neighbor, perception_radius, perception_angle))
                     neighbors.push_back(&neighbor);
-            boid.Flock(neighbors, gain);
+            boid.flock(neighbors, gain);
             if (&boid == selected_boid)
                 highlighted_neighbors = neighbors;
             else
-                boid.ResetColor();
+                boid.reset_color();
         }
 
         for (auto& neighbor : highlighted_neighbors)
-            neighbor->Highlight();
+            neighbor->highlight();
 
         const auto elapsed = clock.restart().asSeconds();
         for (auto& boid : boids) {
-            boid.Update(elapsed, video_mode);
+            boid.update(elapsed, video_mode);
             window.draw(boid);
         }
         window.draw(*selected_boid);
