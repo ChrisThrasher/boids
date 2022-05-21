@@ -1,5 +1,6 @@
 #include "boid.h"
 
+#include <algorithm>
 #include <array>
 #include <iomanip>
 #include <numeric>
