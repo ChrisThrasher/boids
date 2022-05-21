@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <numeric>
 #include <random>
 
 static constexpr auto min_speed = 250.0f;
