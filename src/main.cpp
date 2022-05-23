@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
 
         const auto elapsed = clock.restart();
         for (auto& boid : boids) {
-            boid.update(elapsed, video_mode);
+            boid.update(elapsed, video_mode.size);
             window.draw(boid);
         }
         window.draw(*selected_boid);

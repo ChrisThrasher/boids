@@ -70,13 +70,13 @@ void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
     m_acceleration = clamp(m_acceleration, 0.0f, 500.0f);
 }
 
-void Boid::update(const sf::Time& dt, const sf::VideoMode& video_mode)
+void Boid::update(const sf::Time& dt, const sf::Vector2u& size)
 {
     move(dt.asSeconds() * m_velocity);
     m_velocity = clamp(m_velocity + dt.asSeconds() * m_acceleration, min_speed, max_speed);
 
-    const auto width = (float)video_mode.size.x;
-    const auto height = (float)video_mode.size.y;
+    const auto width = (float)size.x;
+    const auto height = (float)size.y;
     setRotation(m_velocity.angle());
     setPosition({ fmodf(getPosition().x + width, width), fmodf(getPosition().y + height, height) });
 }
