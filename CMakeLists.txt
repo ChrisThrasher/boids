@@ -15,12 +15,12 @@ FetchContent_Declare(SFML
     GIT_TAG master)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(boids src/main.cpp src/boid.cpp)
+add_executable(boids src/main.cpp src/Boid.cpp)
 target_link_libraries(boids PRIVATE SFML::Graphics)
 target_compile_definitions(boids PRIVATE FONT_PATH="${CMAKE_SOURCE_DIR}/data")
 
 add_custom_target(format
-    COMMAND clang-format -i `git ls-files *.cpp *.h`
+    COMMAND clang-format -i `git ls-files *.hpp *.cpp`
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 add_custom_target(tidy
     COMMAND clang-tidy -p ${CMAKE_BINARY_DIR} `git ls-files *.cpp`

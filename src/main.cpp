@@ -1,4 +1,4 @@
-#include "boid.h"
+#include "Boid.hpp"
 
 #include <algorithm>
 #include <array>
