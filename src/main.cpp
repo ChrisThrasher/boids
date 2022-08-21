@@ -21,8 +21,8 @@ static auto make_boids(const size_t num_boids)
         auto seed_seq = std::seed_seq(seed_data.begin(), seed_data.end());
         return std::mt19937(seed_seq);
     }();
-    static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.size.x);
-    static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, (float)video_mode.size.y);
+    static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, float(video_mode.size.x));
+    static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, float(video_mode.size.y));
     static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
 
     auto boids = std::vector<Boid>();
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
                 break;
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    const auto mouse = sf::Vector2f((float)event.mouseButton.x, (float)event.mouseButton.y);
+                    const auto mouse = sf::Vector2f(float(event.mouseButton.x), float(event.mouseButton.y));
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
                         const auto distance = (boid.getPosition() - mouse).lengthSq();
@@ -176,10 +176,10 @@ int main(int argc, char* argv[])
 
         auto view_region = sf::ConvexShape(100);
         view_region.setFillColor({ 255, 255, 255, 64 });
-        const auto delta_theta = 2 * perception_angle / (float)(view_region.getPointCount() - 2);
+        const auto delta_theta = 2 * perception_angle / float(view_region.getPointCount() - 2);
         const auto initial_angle = 90_deg - perception_angle - delta_theta;
         for (size_t i = 1; i < view_region.getPointCount(); ++i) {
-            const auto theta = initial_angle + (float)i * delta_theta;
+            const auto theta = initial_angle + float(i) * delta_theta;
             const auto point = perception_radius * -sf::Vector2f::UnitY.rotatedBy(theta);
             view_region.setPoint(i, point);
         }
