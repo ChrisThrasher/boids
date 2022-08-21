@@ -3,9 +3,9 @@
 #include <SFML/Graphics.hpp>
 
 class Boid : public sf::ConvexShape {
-    sf::Vector2f m_velocity {};
-    sf::Vector2f m_acceleration {};
-    sf::Color m_color {};
+    sf::Vector2f m_velocity;
+    sf::Vector2f m_acceleration;
+    sf::Color m_color;
 
 public:
     struct Gain {
