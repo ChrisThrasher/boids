@@ -15,7 +15,7 @@ static auto rng = []() {
     auto seed_seq = std::seed_seq(seed_data.begin(), seed_data.end());
     return std::mt19937(seed_seq);
 }();
-static auto brightness_dist = std::uniform_int_distribution<sf::Uint16>(128, 255);
+static auto brightness_dist = std::uniform_int_distribution<uint16_t>(128, 255);
 static auto speed_dist = std::uniform_real_distribution<float>(min_speed, max_speed);
 
 static auto clamp(const sf::Vector2f& vector, const float min, const float max)
@@ -37,7 +37,7 @@ Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
     setScale({ 10.0f, 10.0f });
     setPosition(position);
     setRotation(rotation);
-    const auto brightness = sf::Uint8(brightness_dist(rng));
+    const auto brightness = uint8_t(brightness_dist(rng));
     m_color = { brightness, brightness, brightness };
     reset_color();
 }
