@@ -33,11 +33,11 @@ static auto make_boids(const size_t num_boids)
 
 int main(int argc, char* argv[])
 {
-    size_t num_boids = 250;
+    auto num_boids = 250ull;
     if (argc > 1)
         num_boids = std::stoull(argv[1]);
     auto boids = make_boids(num_boids);
-    auto selected_boid = &boids.front();
+    auto* selected_boid = &boids.front();
     selected_boid->select();
 
     auto gain = Boid::Gain { 4e1f, 4e2f, 2e6f };
