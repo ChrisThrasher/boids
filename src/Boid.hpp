@@ -22,5 +22,5 @@ public:
     void select() { setFillColor(sf::Color::Red); }
     void highlight() { setFillColor(sf::Color::Yellow); }
     void reset_color() { setFillColor(m_color); }
-    auto can_see(const Boid& neighbor, const float perception_radius, const sf::Angle& perception_angle) const -> bool;
+    auto can_see(const Boid& neighbor, float perception_radius, const sf::Angle& perception_angle) const -> bool;
 };
