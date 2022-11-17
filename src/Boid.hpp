@@ -1,6 +1,9 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <random>
+
+extern std::mt19937 rng;
 
 class Boid : public sf::ConvexShape {
     sf::Vector2f m_velocity;

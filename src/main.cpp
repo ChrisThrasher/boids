@@ -14,13 +14,6 @@ static const auto video_mode = sf::VideoMode({ 1280, 720 });
 
 static auto make_boids(const size_t num_boids)
 {
-    static auto rng = []() {
-        auto seed_data = std::array<int, std::mt19937::state_size>();
-        auto rd = std::random_device();
-        std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
-        auto seed_seq = std::seed_seq(seed_data.begin(), seed_data.end());
-        return std::mt19937(seed_seq);
-    }();
     static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, float(video_mode.size.x));
     static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, float(video_mode.size.y));
     static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);

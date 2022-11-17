@@ -8,7 +8,7 @@
 static constexpr auto min_speed = 250.0f;
 static constexpr auto max_speed = 500.0f;
 
-static auto rng = []() {
+std::mt19937 rng = [] {
     auto seed_data = std::array<int, std::mt19937::state_size>();
     auto rd = std::random_device();
     std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
