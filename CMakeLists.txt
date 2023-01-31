@@ -10,9 +10,7 @@ elseif(MSVC)
 endif()
 
 include(FetchContent)
-FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG master)
+FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git)
 FetchContent_MakeAvailable(SFML)
 
 add_executable(boids src/main.cpp src/Boid.cpp)
