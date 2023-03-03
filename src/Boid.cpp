@@ -48,7 +48,7 @@ void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
         return;
 
     const auto for_all_neighbors = [neighbors](const auto& transform) {
-        return std::accumulate(neighbors.begin(), neighbors.end(), sf::Vector2f {}, transform);
+        return std::accumulate(neighbors.begin(), neighbors.end(), sf::Vector2f(), transform);
     };
 
     const auto alignment = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
