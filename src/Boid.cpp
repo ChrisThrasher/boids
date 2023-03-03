@@ -44,7 +44,6 @@ Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
 
 void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
 {
-    m_acceleration = {};
     if (neighbors.empty())
         return;
 
