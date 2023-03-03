@@ -5,9 +5,6 @@
 #include <numeric>
 #include <random>
 
-static constexpr auto min_speed = 250.f;
-static constexpr auto max_speed = 500.f;
-
 std::mt19937 rng = [] {
     auto seed_data = std::array<int, std::mt19937::state_size>();
     auto rd = std::random_device();
@@ -16,7 +13,7 @@ std::mt19937 rng = [] {
     return std::mt19937(seed_seq);
 }();
 static auto brightness_dist = std::uniform_int_distribution<uint16_t>(128, 255);
-static auto speed_dist = std::uniform_real_distribution<float>(min_speed, max_speed);
+static auto speed_dist = std::uniform_real_distribution<float>(250, 500);
 
 static auto clamp(const sf::Vector2f& vector, const float min, const float max)
 {
@@ -72,7 +69,7 @@ void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
 void Boid::update(const sf::Time& dt, const sf::Vector2u& size)
 {
     move(dt.asSeconds() * m_velocity);
-    m_velocity = clamp(m_velocity + dt.asSeconds() * m_acceleration, min_speed, max_speed);
+    m_velocity = clamp(m_velocity + dt.asSeconds() * m_acceleration, speed_dist.min(), speed_dist.max());
 
     const auto width = float(size.x);
     const auto height = float(size.y);
