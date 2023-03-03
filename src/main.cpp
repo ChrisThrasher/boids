@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
             for (auto& neighbor : boids)
                 if (boid.can_see(neighbor, perception_radius, perception_angle))
                     neighbors.push_back(&neighbor);
-            boid.flock(neighbors, gain);
+            boid.flock(neighbors, gain, video_mode.size);
             if (&boid == selected_boid)
                 highlighted_neighbors = neighbors;
             else
@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
 
         const auto elapsed = clock.restart();
         for (auto& boid : boids) {
-            boid.update(elapsed, video_mode.size);
+            boid.update(elapsed);
             window.draw(boid);
         }
         window.draw(*selected_boid);

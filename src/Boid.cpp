@@ -39,7 +39,7 @@ Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
     reset_color();
 }
 
-void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
+void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain, const sf::Vector2u& window_size)
 {
     if (neighbors.empty())
         return;
@@ -62,19 +62,27 @@ void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain)
                             })
         * gain.separation;
 
+    constexpr auto lookahead_distance = 100.f;
+    const auto control_point = getPosition() + sf::Vector2f(lookahead_distance, getRotation());
+
+    constexpr auto inset = 50.f;
+    const auto distance_from_left = std::max(inset - control_point.x, 0.f);
+    const auto distance_from_right = std::max(control_point.x - float(window_size.x) + inset, 0.f);
+    const auto distance_from_top = std::max(inset - control_point.y, 0.f);
+    const auto distance_from_bottom = std::max(control_point.y - float(window_size.y) + inset, 0.f);
+    const auto avoidance
+        = 25.f * sf::Vector2f(distance_from_left - distance_from_right, distance_from_top - distance_from_bottom);
+
     m_acceleration = (alignment + cohesion + separation) / float(neighbors.size());
-    m_acceleration = clamp(m_acceleration, 0.0f, 500.0f);
+    m_acceleration = clamp(m_acceleration, 0, 800);
+    m_acceleration += avoidance;
 }
 
-void Boid::update(const sf::Time& dt, const sf::Vector2u& size)
+void Boid::update(const sf::Time& dt)
 {
     move(dt.asSeconds() * m_velocity);
     m_velocity = clamp(m_velocity + dt.asSeconds() * m_acceleration, speed_dist.min(), speed_dist.max());
-
-    const auto width = float(size.x);
-    const auto height = float(size.y);
     setRotation(m_velocity.angle());
-    setPosition({ fmodf(getPosition().x + width, width), fmodf(getPosition().y + height, height) });
 }
 
 auto Boid::can_see(const Boid& neighbor, const float perception_radius, const sf::Angle& perception_angle) const -> bool

@@ -20,8 +20,8 @@ public:
     Boid(const sf::Vector2f& position, const sf::Angle& rotation);
     auto get_velocity() const -> const auto& { return m_velocity; }
 
-    void flock(const std::vector<Boid*>& neighbors, const Gain& gain);
-    void update(const sf::Time& dt, const sf::Vector2u& size);
+    void flock(const std::vector<Boid*>& neighbors, const Gain& gain, const sf::Vector2u& window_size);
+    void update(const sf::Time& dt);
     void select() { setFillColor(sf::Color::Red); }
     void highlight() { setFillColor(sf::Color::Yellow); }
     void reset_color() { setFillColor(m_color); }
