@@ -5,8 +5,8 @@
 #include <numeric>
 #include <random>
 
-static constexpr auto min_speed = 250.0f;
-static constexpr auto max_speed = 500.0f;
+static constexpr auto min_speed = 250.f;
+static constexpr auto max_speed = 500.f;
 
 std::mt19937 rng = [] {
     auto seed_data = std::array<int, std::mt19937::state_size>();
@@ -21,7 +21,7 @@ static auto speed_dist = std::uniform_real_distribution<float>(min_speed, max_sp
 static auto clamp(const sf::Vector2f& vector, const float min, const float max)
 {
     const auto length = vector.length();
-    if (length == 0.0f)
+    if (length == 0)
         return vector;
     return vector.normalized() * std::clamp(length, min, max);
 }
@@ -34,7 +34,7 @@ Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
     setPoint(1, { -2, -2 });
     setPoint(2, { -1, 0 });
     setPoint(3, { -2, 2 });
-    setScale({ 10.0f, 10.0f });
+    setScale({ 10, 10 });
     setPosition(position);
     setRotation(rotation);
     const auto brightness = uint8_t(brightness_dist(rng));

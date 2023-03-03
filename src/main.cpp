@@ -14,9 +14,9 @@ static const auto video_mode = sf::VideoMode({ 1280, 720 });
 
 static auto make_boids(const size_t num_boids)
 {
-    static auto x_position_dist = std::uniform_real_distribution<float>(0.0f, float(video_mode.size.x));
-    static auto y_position_dist = std::uniform_real_distribution<float>(0.0f, float(video_mode.size.y));
-    static auto rotation_dist = std::uniform_real_distribution<float>(0.0f, 360.0f);
+    static auto x_position_dist = std::uniform_real_distribution<float>(0, float(video_mode.size.x));
+    static auto y_position_dist = std::uniform_real_distribution<float>(0, float(video_mode.size.y));
+    static auto rotation_dist = std::uniform_real_distribution<float>(0, 360);
 
     auto boids = std::vector<Boid>();
     for (size_t i = 0; i < num_boids; ++i)
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     selected_boid->select();
 
     auto gain = Boid::Gain { 4e1f, 4e2f, 2e6f };
-    auto perception_radius = 100.0f;
+    auto perception_radius = 100.f;
     auto perception_angle = 135_deg;
 
     auto clock = sf::Clock();
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     text.setFillColor(sf::Color::White);
     text.setOutlineThickness(2);
     text.setOutlineColor(sf::Color::Black);
-    text.setPosition({ 10.0f, 5.0f });
+    text.setPosition({ 10, 5 });
 
     auto window = sf::RenderWindow(video_mode, std::to_string(num_boids) + " Boids");
     window.setFramerateLimit(60);
@@ -84,16 +84,16 @@ int main(int argc, char* argv[])
                 case sf::Keyboard::Up:
                     switch (control) {
                     case Control::ALIGNMENT:
-                        gain.alignment = std::min(gain.alignment * 2.0f, 1e16f);
+                        gain.alignment = std::min(gain.alignment * 2.f, 1e16f);
                         break;
                     case Control::COHESION:
-                        gain.cohesion = std::min(gain.cohesion * 2.0f, 1e16f);
+                        gain.cohesion = std::min(gain.cohesion * 2.f, 1e16f);
                         break;
                     case Control::SEPARATION:
-                        gain.separation = std::min(gain.separation * 2.0f, 1e16f);
+                        gain.separation = std::min(gain.separation * 2.f, 1e16f);
                         break;
                     case Control::RADIUS:
-                        perception_radius += 5.0f;
+                        perception_radius += 5.f;
                         break;
                     case Control::ANGLE:
                         perception_angle = std::min(perception_angle + 5_deg, 180_deg);
@@ -103,16 +103,16 @@ int main(int argc, char* argv[])
                 case sf::Keyboard::Down:
                     switch (control) {
                     case Control::ALIGNMENT:
-                        gain.alignment = std::max(gain.alignment / 2.0f, 1.0f);
+                        gain.alignment = std::max(gain.alignment / 2.f, 1.f);
                         break;
                     case Control::COHESION:
-                        gain.cohesion = std::max(gain.cohesion / 2.0f, 1.0f);
+                        gain.cohesion = std::max(gain.cohesion / 2.f, 1.f);
                         break;
                     case Control::SEPARATION:
-                        gain.separation = std::max(gain.separation / 2.0f, 1.0f);
+                        gain.separation = std::max(gain.separation / 2.f, 1.f);
                         break;
                     case Control::RADIUS:
-                        perception_radius = std::max(perception_radius - 5.0f, 0.0f);
+                        perception_radius = std::max(perception_radius - 5.f, 0.f);
                         break;
                     case Control::ANGLE:
                         perception_angle = std::max(perception_angle - 5_deg, 0_deg);
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
         text_builder << perception_radius << " (R) radius" << (control == Control::RADIUS ? " <" : "") << '\n';
         text_builder << 2 * perception_angle.asDegrees() << " (G) angle" << (control == Control::ANGLE ? " <" : "")
                      << '\n';
-        text_builder << std::setw(3) << 1.0f / elapsed.asSeconds() << " fps\n";
+        text_builder << std::setw(3) << 1.f / elapsed.asSeconds() << " fps\n";
         text.setString(text_builder.str());
         window.draw(text);
 
