@@ -10,9 +10,10 @@
 
 using namespace sf::Literals;
 
-static const auto video_mode = sf::VideoMode({ 1280, 720 });
+namespace {
+const auto video_mode = sf::VideoMode({ 1280, 720 });
 
-static auto make_boids(const size_t num_boids)
+auto make_boids(const size_t num_boids)
 {
     static auto x_position_dist = std::uniform_real_distribution<float>(0, float(video_mode.size.x));
     static auto y_position_dist = std::uniform_real_distribution<float>(0, float(video_mode.size.y));
@@ -23,6 +24,7 @@ static auto make_boids(const size_t num_boids)
     for (size_t i = 0; i < num_boids; ++i)
         boids.emplace_back(sf::Vector2f(x_position_dist(rng), y_position_dist(rng)), sf::degrees(rotation_dist(rng)));
     return boids;
+}
 }
 
 int main(int argc, char* argv[])

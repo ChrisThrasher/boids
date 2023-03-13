@@ -12,15 +12,18 @@ std::mt19937 rng = [] {
     auto seed_seq = std::seed_seq(seed_data.begin(), seed_data.end());
     return std::mt19937(seed_seq);
 }();
-static auto brightness_dist = std::uniform_int_distribution<uint16_t>(128, 255);
-static auto speed_dist = std::uniform_real_distribution<float>(250, 500);
 
-static auto clamp(const sf::Vector2f& vector, const float min, const float max)
+namespace {
+auto brightness_dist = std::uniform_int_distribution<uint16_t>(128, 255);
+auto speed_dist = std::uniform_real_distribution<float>(250, 500);
+
+auto clamp(const sf::Vector2f& vector, const float min, const float max)
 {
     const auto length = vector.length();
     if (length == 0)
         return vector;
     return vector.normalized() * std::clamp(length, min, max);
+}
 }
 
 Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
