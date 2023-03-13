@@ -15,9 +15,9 @@ const auto video_mode = sf::VideoMode({ 1280, 720 });
 
 auto make_boids(const size_t num_boids)
 {
-    static auto x_position_dist = std::uniform_real_distribution<float>(0, float(video_mode.size.x));
-    static auto y_position_dist = std::uniform_real_distribution<float>(0, float(video_mode.size.y));
-    static auto rotation_dist = std::uniform_real_distribution<float>(0, 360);
+    static auto x_position_dist = std::uniform_real_distribution(0.f, float(video_mode.size.x));
+    static auto y_position_dist = std::uniform_real_distribution(0.f, float(video_mode.size.y));
+    static auto rotation_dist = std::uniform_real_distribution(0.f, 360.f);
 
     auto boids = std::vector<Boid>();
     boids.reserve(num_boids);

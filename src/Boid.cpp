@@ -15,7 +15,7 @@ std::mt19937 rng = [] {
 
 namespace {
 auto brightness_dist = std::uniform_int_distribution<uint16_t>(128, 255);
-auto speed_dist = std::uniform_real_distribution<float>(250, 500);
+auto speed_dist = std::uniform_real_distribution(250.f, 500.f);
 
 auto clamp(const sf::Vector2f& vector, const float min, const float max)
 {
