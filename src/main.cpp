@@ -1,5 +1,7 @@
 #include "Boid.hpp"
 
+#include <SFML/Graphics.hpp>
+
 #include <algorithm>
 #include <array>
 #include <iomanip>

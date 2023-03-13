@@ -1,6 +1,7 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
+#include <SFML/System/Time.hpp>
 #include <random>
 
 extern std::mt19937 rng;
