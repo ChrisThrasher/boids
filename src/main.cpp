@@ -73,6 +73,9 @@ int main(int argc, char* argv[])
                 break;
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
+                case sf::Keyboard::Escape:
+                    window.close();
+                    break;
                 case sf::Keyboard::Space:
                     boids = make_boids(num_boids);
                     selected_boid = &boids.front();
