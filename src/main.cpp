@@ -56,6 +56,9 @@ int main(int argc, char* argv[])
     auto window = sf::RenderWindow(video_mode, std::to_string(num_boids) + " Boids");
     window.setFramerateLimit(60);
 
+    const auto content_view = window.getView();
+    auto overlay_view = window.getView();
+
     enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
 
     while (window.isOpen()) {
@@ -63,6 +66,10 @@ int main(int argc, char* argv[])
             switch (event.type) {
             case sf::Event::Closed:
                 window.close();
+                break;
+            case sf::Event::Resized:
+                overlay_view
+                    = sf::View(sf::FloatRect({}, sf::Vector2f(sf::Vector2u(event.size.width, event.size.height))));
                 break;
             case sf::Event::KeyPressed:
                 switch (event.key.code) {
@@ -165,6 +172,7 @@ int main(int argc, char* argv[])
         for (auto& neighbor : highlighted_neighbors)
             neighbor->highlight();
 
+        window.setView(content_view);
         const auto elapsed = clock.restart();
         for (auto& boid : boids) {
             boid.update(elapsed);
@@ -196,6 +204,8 @@ int main(int argc, char* argv[])
                      << '\n';
         text_builder << std::setw(3) << 1.f / elapsed.asSeconds() << " fps\n";
         text.setString(text_builder.str());
+
+        window.setView(overlay_view);
         window.draw(text);
 
         window.display();
