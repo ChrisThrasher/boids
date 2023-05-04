@@ -19,7 +19,7 @@ public:
     };
 
     Boid(const sf::Vector2f& position, const sf::Angle& rotation);
-    auto get_velocity() const -> const auto& { return m_velocity; }
+    auto get_velocity() const { return m_velocity; }
 
     void flock(const std::vector<Boid*>& neighbors, const Gain& gain, const sf::Vector2u& window_size);
     void update(const sf::Time& dt);
