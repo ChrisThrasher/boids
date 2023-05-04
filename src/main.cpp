@@ -24,7 +24,8 @@ auto make_boids(const size_t num_boids)
     auto boids = std::vector<Boid>();
     boids.reserve(num_boids);
     for (size_t i = 0; i < num_boids; ++i)
-        boids.emplace_back(sf::Vector2f(x_position_dist(rng), y_position_dist(rng)), sf::degrees(rotation_dist(rng)));
+        boids.emplace_back(sf::Vector2f(x_position_dist(rng()), y_position_dist(rng())),
+                           sf::degrees(rotation_dist(rng())));
     return boids;
 }
 }

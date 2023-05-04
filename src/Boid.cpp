@@ -5,13 +5,17 @@
 #include <numeric>
 #include <random>
 
-std::mt19937 rng = [] {
-    auto seed_data = std::array<std::random_device::result_type, std::mt19937::state_size>();
-    auto rd = std::random_device();
-    std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
-    auto seed_seq = std::seed_seq(seed_data.begin(), seed_data.end());
-    return std::mt19937(seed_seq);
-}();
+std::mt19937& rng()
+{
+    thread_local auto rng = []() {
+        auto seed_data = std::array<std::random_device::result_type, std::mt19937::state_size>();
+        auto rd = std::random_device();
+        std::generate_n(seed_data.data(), seed_data.size(), std::ref(rd));
+        auto seed_seq = std::seed_seq(seed_data.begin(), seed_data.end());
+        return std::mt19937(seed_seq);
+    }();
+    return rng;
+}
 
 namespace {
 auto brightness_dist = std::uniform_int_distribution<uint16_t>(128, 255);
@@ -28,7 +32,7 @@ auto clamp(const sf::Vector2f& vector, const float min, const float max)
 
 Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
     : sf::ConvexShape(4)
-    , m_velocity(speed_dist(rng), rotation)
+    , m_velocity(speed_dist(rng()), rotation)
 {
     setPoint(0, { 2, 0 });
     setPoint(1, { -2, -2 });
@@ -37,7 +41,7 @@ Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
     setScale({ 10, 10 });
     setPosition(position);
     setRotation(rotation);
-    const auto brightness = uint8_t(brightness_dist(rng));
+    const auto brightness = uint8_t(brightness_dist(rng()));
     m_color = { brightness, brightness, brightness };
     reset_color();
 }

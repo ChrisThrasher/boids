@@ -4,7 +4,7 @@
 #include <SFML/System/Time.hpp>
 #include <random>
 
-extern std::mt19937 rng;
+[[nodiscard]] std::mt19937& rng();
 
 class Boid : public sf::ConvexShape {
     sf::Vector2f m_velocity;
