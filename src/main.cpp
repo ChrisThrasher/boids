@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
 
     auto window = sf::RenderWindow(video_mode, std::to_string(num_boids) + " Boids");
     window.setFramerateLimit(60);
+    window.setMinimumSize(sf::Vector2u(640, 360));
 
     const auto content_view = window.getView();
     auto overlay_view = window.getView();
