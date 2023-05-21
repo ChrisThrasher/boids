@@ -142,7 +142,8 @@ int main(int argc, char* argv[])
                 break;
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    const auto mouse = sf::Vector2f(float(event.mouseButton.x), float(event.mouseButton.y));
+                    const auto mouse
+                        = window.mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y }, content_view);
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
                         const auto distance = (boid.getPosition() - mouse).lengthSq();
