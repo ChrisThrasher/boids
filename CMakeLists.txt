@@ -14,6 +14,7 @@ FetchContent_MakeAvailable(SFML)
 add_executable(boids src/main.cpp src/Boid.cpp)
 target_link_libraries(boids PRIVATE SFML::Graphics)
 target_compile_definitions(boids PRIVATE FONT_PATH="${CMAKE_SOURCE_DIR}/data")
+target_compile_features(boids PRIVATE cxx_std_20)
 
 add_custom_target(format
     COMMAND clang-format -i `git ls-files *.hpp *.cpp`
