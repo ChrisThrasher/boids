@@ -27,6 +27,6 @@ CheckOptions:
   - { key: readability-identifier-naming.MemberCase,          value: lower_case }
   - { key: readability-identifier-naming.PrivateMemberCase,   value: lower_case }
   - { key: readability-identifier-naming.PrivateMemberPrefix, value: m_ }
-  - { key: readability-function-cognitive-complexity.Threshold, value: 66 }
+  - { key: readability-function-cognitive-complexity.Threshold, value: 59 }
 HeaderFilterRegex: './src/'
 WarningsAsErrors: '*'

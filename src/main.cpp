@@ -199,15 +199,16 @@ int main(int argc, char* argv[])
         view_region.setRotation(selected_boid->getRotation());
         window.draw(view_region);
 
+        const auto format_tick
+            = [control](Control requested_control) { return control == requested_control ? " <" : ""; };
         auto text_builder = std::ostringstream();
         text_builder << std::setprecision(1) << std::scientific;
-        text_builder << gain.alignment << " (A) alignment" << (control == Control::ALIGNMENT ? " <" : "") << '\n';
-        text_builder << gain.cohesion << " (C) cohesion" << (control == Control::COHESION ? " <" : "") << '\n';
-        text_builder << gain.separation << " (S) separation" << (control == Control::SEPARATION ? " <" : "") << '\n';
+        text_builder << gain.alignment << " (A) alignment" << format_tick(Control::ALIGNMENT) << '\n';
+        text_builder << gain.cohesion << " (C) cohesion" << format_tick(Control::COHESION) << '\n';
+        text_builder << gain.separation << " (S) separation" << format_tick(Control::SEPARATION) << '\n';
         text_builder << std::setprecision(0) << std::fixed;
-        text_builder << perception_radius << " (R) radius" << (control == Control::RADIUS ? " <" : "") << '\n';
-        text_builder << 2 * perception_angle.asDegrees() << " (G) angle" << (control == Control::ANGLE ? " <" : "")
-                     << '\n';
+        text_builder << perception_radius << " (R) radius" << format_tick(Control::RADIUS) << '\n';
+        text_builder << 2 * perception_angle.asDegrees() << " (G) angle" << format_tick(Control::ANGLE) << '\n';
         text_builder << std::setw(3) << 1.f / elapsed.asSeconds() << " fps\n";
         text.setString(text_builder.str());
 
