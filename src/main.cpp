@@ -58,7 +58,6 @@ int main(int argc, char* argv[])
     window.setFramerateLimit(60);
     window.setMinimumSize(sf::Vector2u(640, 360));
 
-    const auto content_view = window.getView();
     auto overlay_view = window.getView();
 
     enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
@@ -142,8 +141,8 @@ int main(int argc, char* argv[])
                 break;
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    const auto mouse
-                        = window.mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y }, content_view);
+                    const auto mouse = window.mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y },
+                                                               window.getDefaultView());
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
                         const auto distance = (boid.getPosition() - mouse).lengthSq();
@@ -178,7 +177,7 @@ int main(int argc, char* argv[])
         for (auto& neighbor : highlighted_neighbors)
             neighbor->highlight();
 
-        window.setView(content_view);
+        window.setView(window.getDefaultView());
         const auto elapsed = clock.restart();
         for (auto& boid : boids) {
             boid.update(elapsed);
