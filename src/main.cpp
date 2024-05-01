@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
     auto overlay_view = window.getView();
 
-    enum class Control { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
+    enum class Control : std::uint8_t { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
 
     while (window.isOpen()) {
         for (auto event = sf::Event(); window.pollEvent(event);) {
