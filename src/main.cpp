@@ -64,40 +64,36 @@ int main(int argc, char* argv[])
 
     while (window.isOpen()) {
         for (auto event = sf::Event(); window.pollEvent(event);) {
-            switch (event.type) {
-            case sf::Event::Closed:
+            if (event.is<sf::Event::Closed>()) {
                 window.close();
-                break;
-            case sf::Event::Resized:
-                overlay_view
-                    = sf::View(sf::FloatRect({}, sf::Vector2f(sf::Vector2u(event.size.width, event.size.height))));
-                break;
-            case sf::Event::KeyPressed:
-                switch (event.key.code) {
-                case sf::Keyboard::Escape:
+            } else if (const auto* resized = event.getIf<sf::Event::Resized>()) {
+                overlay_view = sf::View(sf::FloatRect({}, sf::Vector2f(resized->size)));
+            } else if (const auto* key_pressed = event.getIf<sf::Event::KeyPressed>()) {
+                switch (key_pressed->code) {
+                case sf::Keyboard::Key::Escape:
                     window.close();
                     break;
-                case sf::Keyboard::Space:
+                case sf::Keyboard::Key::Space:
                     boids = make_boids(num_boids);
                     selected_boid = &boids.front();
                     selected_boid->select();
                     break;
-                case sf::Keyboard::A:
+                case sf::Keyboard::Key::A:
                     control = Control::ALIGNMENT;
                     break;
-                case sf::Keyboard::C:
+                case sf::Keyboard::Key::C:
                     control = Control::COHESION;
                     break;
-                case sf::Keyboard::S:
+                case sf::Keyboard::Key::S:
                     control = Control::SEPARATION;
                     break;
-                case sf::Keyboard::R:
+                case sf::Keyboard::Key::R:
                     control = Control::RADIUS;
                     break;
-                case sf::Keyboard::G:
+                case sf::Keyboard::Key::G:
                     control = Control::ANGLE;
                     break;
-                case sf::Keyboard::Up:
+                case sf::Keyboard::Key::Up:
                     switch (control) {
                     case Control::ALIGNMENT:
                         gain.alignment = std::min(gain.alignment * 2.f, 1e16f);
@@ -116,7 +112,7 @@ int main(int argc, char* argv[])
                         break;
                     }
                     break;
-                case sf::Keyboard::Down:
+                case sf::Keyboard::Key::Down:
                     switch (control) {
                     case Control::ALIGNMENT:
                         gain.alignment = std::max(gain.alignment / 2.f, 1.f);
@@ -138,11 +134,9 @@ int main(int argc, char* argv[])
                 default:
                     break;
                 }
-                break;
-            case sf::Event::MouseButtonPressed:
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    const auto mouse = window.mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y },
-                                                               window.getDefaultView());
+            } else if (const auto* mouse_button_pressed = event.getIf<sf::Event::MouseButtonPressed>()) {
+                if (mouse_button_pressed->button == sf::Mouse::Button::Left) {
+                    const auto mouse = window.mapPixelToCoords(mouse_button_pressed->position, window.getDefaultView());
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
                         const auto distance = (boid.getPosition() - mouse).lengthSq();
@@ -153,9 +147,6 @@ int main(int argc, char* argv[])
                     }
                     selected_boid->select();
                 }
-                break;
-            default:
-                break;
             }
         }
 
