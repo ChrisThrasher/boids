@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     enum class Control : std::uint8_t { ALIGNMENT, COHESION, SEPARATION, RADIUS, ANGLE } control = Control::ALIGNMENT;
 
     while (window.isOpen()) {
-        for (auto event = sf::Event(); window.pollEvent(event);) {
+        while (const auto event = window.pollEvent()) {
             if (event.is<sf::Event::Closed>()) {
                 window.close();
             } else if (const auto* resized = event.getIf<sf::Event::Resized>()) {
