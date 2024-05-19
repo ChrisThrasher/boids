@@ -44,9 +44,7 @@ int main(int argc, char* argv[])
     auto perception_angle = 135_deg;
 
     auto clock = sf::Clock();
-    auto font = sf::Font();
-    if (!font.loadFromFile(FONT_PATH / std::filesystem::path("font.ttf")))
-        throw std::runtime_error("Failed to load font");
+    const auto font = sf::Font::loadFromFile(FONT_PATH / std::filesystem::path("font.ttf")).value();
 
     auto text = sf::Text(font, "", 24);
     text.setFillColor(sf::Color::White);
