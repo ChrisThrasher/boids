@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     auto perception_angle = 135_deg;
 
     auto clock = sf::Clock();
-    const auto font = sf::Font::loadFromFile(FONT_PATH / std::filesystem::path("font.ttf")).value();
+    const auto font = sf::Font::openFromFile(FONT_PATH / std::filesystem::path("font.ttf")).value();
 
     auto text = sf::Text(font, "", 24);
     text.setFillColor(sf::Color::White);
@@ -62,11 +62,11 @@ int main(int argc, char* argv[])
 
     while (window.isOpen()) {
         while (const auto event = window.pollEvent()) {
-            if (event.is<sf::Event::Closed>()) {
+            if (event->is<sf::Event::Closed>()) {
                 window.close();
-            } else if (const auto* resized = event.getIf<sf::Event::Resized>()) {
+            } else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
                 overlay_view = sf::View(sf::FloatRect({}, sf::Vector2f(resized->size)));
-            } else if (const auto* key_pressed = event.getIf<sf::Event::KeyPressed>()) {
+            } else if (const auto* key_pressed = event->getIf<sf::Event::KeyPressed>()) {
                 switch (key_pressed->code) {
                 case sf::Keyboard::Key::Escape:
                     window.close();
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
                 default:
                     break;
                 }
-            } else if (const auto* mouse_button_pressed = event.getIf<sf::Event::MouseButtonPressed>()) {
+            } else if (const auto* mouse_button_pressed = event->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouse_button_pressed->button == sf::Mouse::Button::Left) {
                     const auto mouse = window.mapPixelToCoords(mouse_button_pressed->position, window.getDefaultView());
                     auto min_distance = std::numeric_limits<float>::max();
