@@ -66,7 +66,7 @@ void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain, const sf
         * gain.cohesion;
     const auto separation = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
                                 const auto diff = getPosition() - boid->getPosition();
-                                return sum + diff / diff.lengthSq();
+                                return sum + diff / diff.lengthSquared();
                             })
         * gain.separation;
 
@@ -98,7 +98,7 @@ auto Boid::can_see(const Boid& neighbor, const float perception_radius, const sf
     if (this == &neighbor)
         return false;
     const auto to_neighbor = neighbor.getPosition() - getPosition();
-    const auto is_within_radius = to_neighbor.lengthSq() < perception_radius * perception_radius;
+    const auto is_within_radius = to_neighbor.lengthSquared() < perception_radius * perception_radius;
     if (is_within_radius && to_neighbor != sf::Vector2f()) {
         const auto angle_to_neighbor = m_velocity.angleTo(to_neighbor);
         if (angle_to_neighbor < perception_angle && angle_to_neighbor > -perception_angle)
