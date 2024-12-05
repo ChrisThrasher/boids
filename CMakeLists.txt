@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.22)
 project(boids CXX)
 
+include(FetchContent)
+FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git)
+FetchContent_MakeAvailable(SFML)
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
     add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast)
 elseif(MSVC)
     add_compile_options(/WX /W4 /permissive-)
 endif()
-
-include(FetchContent)
-FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git)
-FetchContent_MakeAvailable(SFML)
 
 add_executable(boids src/main.cpp src/Boid.cpp)
 target_link_libraries(boids PRIVATE SFML::Graphics)

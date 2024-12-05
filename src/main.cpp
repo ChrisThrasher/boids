@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     auto perception_angle = 135_deg;
 
     auto clock = sf::Clock();
-    const auto font = sf::Font::openFromFile(FONT_PATH / std::filesystem::path("font.ttf")).value();
+    const auto font = sf::Font(FONT_PATH / std::filesystem::path("font.ttf"));
 
     auto text = sf::Text(font, "", 24);
     text.setFillColor(sf::Color::White);
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
                     const auto mouse = window.mapPixelToCoords(mouse_button_pressed->position, window.getDefaultView());
                     auto min_distance = std::numeric_limits<float>::max();
                     for (auto& boid : boids) {
-                        const auto distance = (boid.getPosition() - mouse).lengthSq();
+                        const auto distance = (boid.getPosition() - mouse).lengthSquared();
                         if (distance < min_distance) {
                             min_distance = distance;
                             selected_boid = &boid;
@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
         const auto initial_angle = 90_deg - perception_angle - delta_theta;
         for (size_t i = 1; i < view_region.getPointCount(); ++i) {
             const auto theta = initial_angle + float(i) * delta_theta;
-            const auto point = perception_radius * -sf::Vector2f::UnitY.rotatedBy(theta);
+            const auto point = perception_radius * -sf::Vector2f(0, 1).rotatedBy(theta);
             view_region.setPoint(i, point);
         }
         view_region.setPosition(selected_boid->getPosition());
