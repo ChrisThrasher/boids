@@ -18,7 +18,7 @@ public:
         float separation;
     };
 
-    Boid(const sf::Vector2f& position, const sf::Angle& rotation);
+    Boid(sf::Vector2f position, sf::Angle rotation);
     auto get_velocity() const { return m_velocity; }
 
     void flock(const std::vector<Boid*>& neighbors, const Gain& gain, const sf::Vector2u& window_size);
@@ -26,5 +26,5 @@ public:
     void select() { setFillColor(sf::Color::Red); }
     void highlight() { setFillColor(sf::Color::Yellow); }
     void reset_color() { setFillColor(m_color); }
-    auto can_see(const Boid& neighbor, float perception_radius, const sf::Angle& perception_angle) const -> bool;
+    auto can_see(const Boid& neighbor, float perception_radius, sf::Angle perception_angle) const -> bool;
 };

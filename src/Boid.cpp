@@ -10,7 +10,7 @@ namespace {
 auto brightness_dist = std::uniform_int_distribution<uint16_t>(128, 255);
 auto speed_dist = std::uniform_real_distribution(250.f, 500.f);
 
-auto clamp(const sf::Vector2f& vector, const float min, const float max)
+auto clamp(const sf::Vector2f vector, const float min, const float max)
 {
     const auto length = vector.length();
     if (length == 0)
@@ -31,7 +31,7 @@ std::mt19937& rng()
     return rng;
 }
 
-Boid::Boid(const sf::Vector2f& position, const sf::Angle& rotation)
+Boid::Boid(const sf::Vector2f position, const sf::Angle rotation)
     : sf::ConvexShape(4)
     , m_velocity(speed_dist(rng()), rotation)
 {
@@ -56,15 +56,15 @@ void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain, const sf
         return std::accumulate(neighbors.cbegin(), neighbors.cend(), sf::Vector2f(), transform);
     };
 
-    const auto alignment = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
+    const auto alignment = for_all_neighbors([this](const sf::Vector2f sum, const Boid* boid) {
                                return sum + boid->get_velocity() - get_velocity();
                            })
         * gain.alignment;
-    const auto cohesion = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
+    const auto cohesion = for_all_neighbors([this](const sf::Vector2f sum, const Boid* boid) {
                               return sum + boid->getPosition() - getPosition();
                           })
         * gain.cohesion;
-    const auto separation = for_all_neighbors([this](const sf::Vector2f& sum, const Boid* boid) {
+    const auto separation = for_all_neighbors([this](const sf::Vector2f sum, const Boid* boid) {
                                 const auto diff = getPosition() - boid->getPosition();
                                 return sum + diff / diff.lengthSquared();
                             })
@@ -93,7 +93,7 @@ void Boid::update(const sf::Time& dt)
     setRotation(m_velocity.angle());
 }
 
-auto Boid::can_see(const Boid& neighbor, const float perception_radius, const sf::Angle& perception_angle) const -> bool
+auto Boid::can_see(const Boid& neighbor, const float perception_radius, const sf::Angle perception_angle) const -> bool
 {
     if (this == &neighbor)
         return false;
