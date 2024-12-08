@@ -3,9 +3,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <algorithm>
-#include <array>
 #include <iomanip>
-#include <numeric>
 #include <random>
 #include <sstream>
 #include <vector>
