@@ -13,9 +13,9 @@ class Boid : public sf::ConvexShape {
 
 public:
     struct Gain {
-        float alignment;
-        float cohesion;
-        float separation;
+        float alignment {};
+        float cohesion {};
+        float separation {};
     };
 
     Boid(sf::Vector2f position, sf::Angle rotation);
