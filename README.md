@@ -5,8 +5,8 @@ SFML-based flocking simulation program
 ![boids](docs/boids.png)
 
 # Requirements
- * C++17
- * CMake 3.22
+ * C++20
+ * CMake 3.28
 
 # Building & Running
 

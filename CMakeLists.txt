@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.28)
 project(boids CXX)
 
 include(FetchContent)
-FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git)
+FetchContent_Declare(SFML GIT_REPOSITORY https://github.com/SFML/SFML.git SYSTEM EXCLUDE_FROM_ALL)
 FetchContent_MakeAvailable(SFML)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
@@ -13,6 +13,7 @@ endif()
 
 add_executable(boids src/main.cpp src/Boid.cpp)
 target_link_libraries(boids PRIVATE SFML::Graphics)
+target_compile_features(boids PRIVATE cxx_std_20)
 target_compile_definitions(boids PRIVATE FONT_PATH="${CMAKE_SOURCE_DIR}/data")
 
 add_custom_target(format
