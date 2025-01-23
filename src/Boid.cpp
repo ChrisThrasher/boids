@@ -47,13 +47,13 @@ Boid::Boid(const sf::Vector2f position, const sf::Angle rotation)
     reset_color();
 }
 
-void Boid::flock(const std::vector<Boid*>& neighbors, const Gain& gain, const sf::Vector2u& window_size)
+void Boid::flock(const std::span<Boid*> neighbors, const Gain& gain, const sf::Vector2u& window_size)
 {
     if (neighbors.empty())
         return;
 
     const auto for_all_neighbors = [neighbors](const auto& transform) {
-        return std::accumulate(neighbors.cbegin(), neighbors.cend(), sf::Vector2f(), transform);
+        return std::accumulate(neighbors.begin(), neighbors.end(), sf::Vector2f(), transform);
     };
 
     const auto alignment = for_all_neighbors([this](const sf::Vector2f sum, const Boid* boid) {

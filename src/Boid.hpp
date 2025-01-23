@@ -3,6 +3,7 @@
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/System/Time.hpp>
 #include <random>
+#include <span>
 
 [[nodiscard]] std::mt19937& rng();
 
@@ -21,7 +22,7 @@ public:
     Boid(sf::Vector2f position, sf::Angle rotation);
     auto get_velocity() const { return m_velocity; }
 
-    void flock(const std::vector<Boid*>& neighbors, const Gain& gain, const sf::Vector2u& window_size);
+    void flock(std::span<Boid*> neighbors, const Gain& gain, const sf::Vector2u& window_size);
     void update(const sf::Time& dt);
     void select() { setFillColor(sf::Color::Red); }
     void highlight() { setFillColor(sf::Color::Yellow); }
