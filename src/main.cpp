@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     auto* selected_boid = &boids.front();
     selected_boid->select();
 
-    auto gain = Boid::Gain { 4e1f, 4e2f, 2e6f };
+    auto gain = Boid::Gain { .alignment = 4e1f, .cohesion = 4e2f, .separation = 2e6f };
     auto perception_radius = 100.f;
     auto perception_angle = 135_deg;
 
