@@ -3,9 +3,8 @@
 #include <SFML/Graphics.hpp>
 
 #include <algorithm>
-#include <iomanip>
+#include <format>
 #include <random>
-#include <sstream>
 #include <vector>
 
 using namespace sf::Literals;
@@ -187,16 +186,23 @@ int main(int argc, char* argv[])
 
         const auto format_tick
             = [control](Control requested_control) { return control == requested_control ? " <" : ""; };
-        auto text_builder = std::ostringstream();
-        text_builder << std::setprecision(1) << std::scientific;
-        text_builder << gain.alignment << " (A) alignment" << format_tick(Control::ALIGNMENT) << '\n';
-        text_builder << gain.cohesion << " (C) cohesion" << format_tick(Control::COHESION) << '\n';
-        text_builder << gain.separation << " (S) separation" << format_tick(Control::SEPARATION) << '\n';
-        text_builder << std::setprecision(0) << std::fixed;
-        text_builder << perception_radius << " (R) radius" << format_tick(Control::RADIUS) << '\n';
-        text_builder << 2 * perception_angle.asDegrees() << " (G) angle" << format_tick(Control::ANGLE) << '\n';
-        text_builder << std::setw(3) << 1.f / elapsed.asSeconds() << " fps\n";
-        text.setString(text_builder.str());
+        text.setString(std::format("{:.1e} (A) alignment{}\n"
+                                   "{:.1e} (C) cohesion{}\n"
+                                   "{:.1e} (S) separation{}\n"
+                                   "{:.0f} (R) radius{}\n"
+                                   "{:.0f} (G) angle{}\n"
+                                   "{:.0f} fps\n",
+                                   gain.alignment,
+                                   format_tick(Control::ALIGNMENT),
+                                   gain.cohesion,
+                                   format_tick(Control::COHESION),
+                                   gain.separation,
+                                   format_tick(Control::SEPARATION),
+                                   perception_radius,
+                                   format_tick(Control::RADIUS),
+                                   2 * perception_angle.asDegrees(),
+                                   format_tick(Control::ANGLE),
+                                   1.f / elapsed.asSeconds()));
 
         window.setView(overlay_view);
         window.draw(text);
